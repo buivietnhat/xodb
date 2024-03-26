@@ -25,7 +25,7 @@ namespace xodb {
 //
 TEST(CrashTest, Ensure) {
   // Full stacktrace provided by backward-cpp
-  IOSERVICE_ENSURE(false, "assert failure");
+  XODB_ENSURE(false, "assert failure");
 }
 //
 //TEST(CrashTest, Throw) {}

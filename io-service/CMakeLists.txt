@@ -163,7 +163,7 @@ file(GLOB_RECURSE
 )
 
 set(THIRDPARTY_LIBS
-        Arrow::arrow_static
+        Arrow::arrow_shared
 )
 
 add_library(ioservice STATIC ${IOSERVICE_SRCS}
