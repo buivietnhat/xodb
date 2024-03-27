@@ -62,8 +62,9 @@ class LRUReplacer : public Replacer<Item> {
     index_.erase(item);
   }
 
- private:
+  size_t Size() const { return history_.size(); }
 
+ private:
   void RecordNewest(const Item &item) {
     auto new_pos = history_.insert(history_.begin(), item);
     index_[item] = new_pos;

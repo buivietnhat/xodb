@@ -44,6 +44,19 @@ foreach (ioservice_test_source ${IOSERVICE_TEST_SOURCES})
             RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/test"
             COMMAND ${ioservice_test_name}
     )
+
+    # Add a Valgrind target
+    add_custom_target(${ioservice_test_name}_valgrind
+            COMMAND valgrind
+            --leak-check=full
+            --error-exitcode=1
+            --tool=memcheck
+            --leak-check=full
+            --errors-for-leak-kinds=definite
+            --show-leak-kinds=definite ./${ioservice_test_name}
+            WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/test"
+            DEPENDS ${ioservice_test_name}
+    )
 endforeach ()
 
 

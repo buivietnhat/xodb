@@ -4,6 +4,7 @@
 #include <cassert>
 #include <exception>
 #include <stdexcept>
+#include <iostream>
 
 namespace xodb {
 
