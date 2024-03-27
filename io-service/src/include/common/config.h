@@ -4,6 +4,7 @@
 
 namespace xodb {
 
-using page_id_t = size_t;
+using file_id_t = size_t;
+using frame_id_t = size_t;
 
 }

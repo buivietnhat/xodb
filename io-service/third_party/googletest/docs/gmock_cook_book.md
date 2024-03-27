@@ -1621,7 +1621,7 @@ Let's look at an example:
 TEST(...) {
   NiceMock<MockDomainRegistry> mock_registry;
   EXPECT_CALL(mock_registry, GetDomainOwner("google.com"))
-          .WillRepeatedly(Return("Larry Page"));
+          .WillRepeatedly(Return("Larry File"));
 
   // Use mock_registry in code under test.
   ... &mock_registry ...
@@ -1640,7 +1640,7 @@ arguments as well? The standard technique is to add a "catch all" `EXPECT_CALL`:
   EXPECT_CALL(mock_registry, GetDomainOwner(_))
         .Times(AnyNumber());  // catches all other calls to this method.
   EXPECT_CALL(mock_registry, GetDomainOwner("google.com"))
-        .WillRepeatedly(Return("Larry Page"));
+        .WillRepeatedly(Return("Larry File"));
 ```
 
 Remember that `_` is the wildcard matcher that matches anything. With this, if
