@@ -7,9 +7,9 @@ namespace xodb {
 TEST(LRUReplacerTest, BasicTest) {
   LRUReplacer<int> replacer{3};
 
-  replacer.RecordAccess(1);
-  replacer.RecordAccess(2);
-  replacer.RecordAccess(3);
+  EXPECT_TRUE(replacer.RecordAccess(1));
+  EXPECT_TRUE(replacer.RecordAccess(2));
+  EXPECT_TRUE(replacer.RecordAccess(3));
 
   ASSERT_EQ(3, replacer.Size());
 
@@ -18,13 +18,19 @@ TEST(LRUReplacerTest, BasicTest) {
   EXPECT_TRUE(replacer.Evict(&victem));
   EXPECT_EQ(1, victem);
 
-  EXPECT_TRUE(replacer.Evict(&victem));
-  EXPECT_EQ(2, victem);
+  EXPECT_TRUE(replacer.RecordAccess(4));
+  EXPECT_TRUE(replacer.RecordAccess(2));
 
   EXPECT_TRUE(replacer.Evict(&victem));
   EXPECT_EQ(3, victem);
 
-  // now we no longer able to evict a new item
+  EXPECT_TRUE(replacer.Evict(&victem));
+  EXPECT_EQ(4, victem);
+
+  EXPECT_TRUE(replacer.Evict(&victem));
+  EXPECT_EQ(2, victem);
+
+  // now we no longer be able to evict a new item
   EXPECT_FALSE(replacer.Evict(&victem));
 }
 
