@@ -11,15 +11,19 @@ namespace xodb {
 template <typename Item>
   requires Hashable<Item>
 class LRUReplacer : public Replacer<Item> {
+  using Pos = typename std::list<Item>::iterator;
+
  public:
   LRUReplacer(size_t max_item) : max_num_items_(max_item) {}
 
   bool RecordAccess(const Item &item) override {
     // if the record is still in my history
-    auto pos = std::find(history_.begin(), history_.end(), item);
-    if (pos != history_.end()) {
+    if (index_.contains(item)) {
+      auto pos = index_[item];
+
       history_.erase(pos);
-      history_.push_front(item);
+      RecordNewest(item);
+
       return true;
     }
 
@@ -28,7 +32,7 @@ class LRUReplacer : public Replacer<Item> {
     }
 
     // otherwise insert as a new item
-    history_.push_front(item);
+    RecordNewest(item);
     return true;
   }
 
@@ -40,18 +44,22 @@ class LRUReplacer : public Replacer<Item> {
     }
 
     *item = history_.back();
+
     history_.pop_back();
+    index_.erase(*item);
 
     return true;
   }
 
   bool Remove(const Item &item) override {
-    auto pos = std::find(history_.begin(), history_.end(), item);
-    if (pos == history_.end()) {
+    if (!index_.contains(item)) {
       return false;
     }
 
+    auto pos = index_[item];
     history_.erase(pos);
+    index_.erase(item);
+    
     return true;
   }
 
@@ -60,9 +68,15 @@ class LRUReplacer : public Replacer<Item> {
   bool Full() const { return history_.size() == max_num_items_; }
 
  private:
+  void RecordNewest(const Item &item) {
+    auto new_pos = history_.insert(history_.begin(), item);
+    index_[item] = new_pos;
+  }
+
   size_t max_num_items_;
   // represen this history of access, newly accessed item will be put to the front of the list
   std::list<Item> history_;
+  std::unordered_map<Item, Pos> index_;
 };
 
 }  // namespace xodb
