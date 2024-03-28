@@ -11,16 +11,17 @@ namespace xodb {
 
 class BufferPoolManager {
  public:
-  BufferPoolManager(size_t size, std::unique_ptr<FileLoader> file_loader);
+  BufferPoolManager(size_t size, FileLoader *file_loader, std::unique_ptr<Replacer<file_id_t>> replacer);
 
   ~BufferPoolManager();
 
   std::unique_ptr<File> FetchFile(file_id_t file_id);
 
  private:
-  size_t size_;
-  File *files_;
-  std::unique_ptr<FileLoader> file_loader_;
+  size_t size_{0};
+  File *files_{nullptr};
+  FileLoader *file_loader_{nullptr};
+  std::unique_ptr<Replacer<file_id_t>> replacer_;
   std::unordered_map<file_id_t, frame_id_t> file_table_;
 };
 

@@ -12,6 +12,8 @@ class Replacer {
   virtual bool Evict(Item *item) = 0;
 
   virtual bool Remove(const Item &item) = 0;
+
+  virtual ~Replacer() = default;
 };
 
 }  // namespace xodb
