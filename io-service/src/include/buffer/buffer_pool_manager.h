@@ -20,7 +20,7 @@ class BufferPoolManager {
  private:
   size_t size_{0};
   File *files_{nullptr};
-  FileLoader *file_loader_{nullptr};
+  [[maybe_unused]] FileLoader *file_loader_{nullptr};
   std::unique_ptr<Replacer<file_id_t>> replacer_;
   std::unordered_map<file_id_t, frame_id_t> file_table_;
 };
