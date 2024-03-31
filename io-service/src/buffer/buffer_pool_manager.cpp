@@ -10,20 +10,18 @@ BufferPoolManager::BufferPoolManager(size_t size, FileLoader *file_loader,
   XODB_ASSERT(file_loader != nullptr, "file loader must not be null");
   XODB_ASSERT(replacer != nullptr, "replacer must not be null");
 
-  files_ = new File[size_];
+  files_ = new ParquetFile[size_];
 }
 
 BufferPoolManager::~BufferPoolManager() { delete[] files_; }
 
-std::unique_ptr<File> BufferPoolManager::FetchFile(xodb::file_id_t file_id) {
+bool BufferPoolManager::FetchFile(file_id_t file_id, ParquetFile *file) {
   // first to check if the file is already in my cache
   if (file_table_.contains(file_id)) {
     auto frame_id = file_table_[file_id];
     XODB_ENSURE(frame_id < size_, "must be in bound");
-
-
   }
-  return std::unique_ptr<File>();
+  return false;
 }
 
 }  // namespace xodb

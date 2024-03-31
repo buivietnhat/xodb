@@ -4,8 +4,8 @@
 #include <unordered_map>
 #include "buffer/replacer.h"
 #include "common/config.h"
-#include "storage/file.h"
 #include "storage/file_loader.h"
+#include "storage/parquet_file.h"
 
 namespace xodb {
 
@@ -15,11 +15,11 @@ class BufferPoolManager {
 
   ~BufferPoolManager();
 
-  std::unique_ptr<File> FetchFile(file_id_t file_id);
+   bool FetchFile(file_id_t file_id, ParquetFile *file);
 
  private:
   size_t size_{0};
-  File *files_{nullptr};
+  ParquetFile *files_{nullptr};
   [[maybe_unused]] FileLoader *file_loader_{nullptr};
   std::unique_ptr<Replacer<file_id_t>> replacer_;
   std::unordered_map<file_id_t, frame_id_t> file_table_;
