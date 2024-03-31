@@ -23,8 +23,11 @@ class ParquetFile {
     return table_result.ValueOrDie();
   }
 
+  file_id_t GetFileId() const { return file_id_; }
+
  private:
   std::shared_ptr<arrow::Table> table_;
+  file_id_t file_id_{INVALID_FILE_ID};
 };
 
 }  // namespace xodb

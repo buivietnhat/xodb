@@ -7,7 +7,7 @@ namespace xodb {
 
 class FileLoader {
  public:
-  virtual void SeekFile(file_id_t file_id, ParquetFile *file) const = 0;
+  virtual bool SeekFile(file_id_t file_id, ParquetFile *file) const = 0;
 
   virtual ~FileLoader() = default;
 };
