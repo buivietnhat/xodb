@@ -1,6 +1,5 @@
-
-#include "buffer/lru_replacer.h"
 #include "gtest/gtest.h"
+#include "object_pool/lru_replacer.h"
 
 namespace xodb {
 
@@ -11,7 +10,8 @@ TEST(LRUReplacerTest, BasicTest) {
   EXPECT_TRUE(replacer.RecordAccess(2));
   EXPECT_TRUE(replacer.RecordAccess(3));
 
-  ASSERT_EQ(3, replacer.Size());
+  EXPECT_EQ(3, replacer.Size());
+  EXPECT_TRUE(replacer.Full());
 
   // evict the first victim, should be 1
   int victem{-1};

@@ -1,8 +1,8 @@
 #pragma once
 
+#include <arrow/table.h>
 #include <parquet/arrow/reader.h>
 #include <parquet/arrow/writer.h>
-#include <arrow/table.h>
 #include "common/macros.h"
 
 namespace xodb {
@@ -22,6 +22,8 @@ class ParquetFile {
 
     return table_result.ValueOrDie();
   }
+
+  bool Valid() const { return file_id_ != INVALID_FILE_ID; }
 
   file_id_t GetFileId() const { return file_id_; }
 

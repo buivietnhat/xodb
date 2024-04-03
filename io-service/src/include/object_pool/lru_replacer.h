@@ -2,7 +2,7 @@
 
 #include <list>
 #include <unordered_map>
-#include "buffer/replacer.h"
+#include "object_pool/replacer.h"
 #include "common/concepts.h"
 #include "common/macros.h"
 
