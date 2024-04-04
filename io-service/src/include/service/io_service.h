@@ -37,7 +37,7 @@ class IOService {
   //  arrow::Result<arrow::fs::FileInfo> FileInfoFromDescriptor(const arrow::flight::FlightDescriptor &descriptor);
   //
   //  arrow::Status DoActionDropDataset(const std::string &key);
-  arrow::Status RetrieveFiles(const std::vector<file_id_t> &file_list, std::optional<std::vector<int>> indices,
+  arrow::Status RetrieveFiles(const std::vector<std::string> &file_list, std::optional<std::vector<int>> indices,
                               std::vector<std::shared_ptr<arrow::Table>> *out);
 
   std::unique_ptr<arrow::fs::FileSystem> root_;
@@ -45,7 +45,7 @@ class IOService {
   BufferPoolManager *buffer_pool_manager_{nullptr};
 
   // map table_name -> list of file corresponding to that table
-  std::unordered_map<std::string, std::vector<file_id_t>> table_to_files_;
+  std::unordered_map<std::string, std::vector<std::string>> table_to_files_;
 
   // map table_name -> its schema
   std::unordered_map<std::string, std::shared_ptr<arrow::Schema>> schema_;

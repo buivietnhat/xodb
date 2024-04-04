@@ -13,15 +13,19 @@ namespace xodb {
 
 class BufferPoolManager : public FilePoolManager {
  public:
-  BufferPoolManager(size_t size, FileLoader *file_loader, std::unique_ptr<LRUReplacer<file_id_t>> replacer);
+  BufferPoolManager(size_t size, LocalDiskFileLoader *file_loader, std::unique_ptr<LRUReplacer<frame_id_t>> replacer);
 
  private:
   void LoadFileCachedCorrespondToFrame(frame_id_t frame_id, ParquetFile *file) override;
 
-  bool SeekFileAndUpdateCache(file_id_t file_id, frame_id_t frame_id, ParquetFile *file) override;
+  bool SeekFileAndUpdateCache(const std::string &file_name, frame_id_t frame_id, ParquetFile *file) override;
+
+  std::optional<std::string> GetFileNameOfFrame(frame_id_t frame_id) const override;
+
+  void RemoveFrame(frame_id_t frame_id) override;
 
   std::vector<ParquetFile> files_;
-  FileLoader *file_loader_{nullptr};
+  LocalDiskFileLoader *file_loader_{nullptr};
 };
 
 }  // namespace xodb

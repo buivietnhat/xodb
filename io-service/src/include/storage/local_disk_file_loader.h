@@ -16,10 +16,16 @@ class LocalDiskFileLoader : public FilePoolManager {
  private:
   void LoadFileCachedCorrespondToFrame(frame_id_t frame_id, ParquetFile *file) override;
 
-  bool SeekFileAndUpdateCache(file_id_t file_id, frame_id_t frame_id, ParquetFile *file) override;
+  bool SeekFileAndUpdateCache(const std::string &file_name, frame_id_t frame_id, ParquetFile *file) override;
+
+  std::optional<std::string> GetFileNameOfFrame(frame_id_t frame_id) const override;
+
+  void RemoveFrame(frame_id_t frame_id) override;
+
+  arrow::Status LoadFile(const std::string &filename, ParquetFile *file);
 
  private:
-  std::vector<std::string> filenames_;
+  std::vector<std::string> file_names_;
   std::shared_ptr<arrow::fs::FileSystem> root_;
 };
 

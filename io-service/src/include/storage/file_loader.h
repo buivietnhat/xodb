@@ -12,7 +12,7 @@ class FileLoader {
   FileLoader(std::unique_ptr<LocalDiskFileLoader> local_loader, std::unique_ptr<S3FileLoader> remote_loader)
       : local_loader_(std::move(local_loader)), remote_loader_(std::move(remote_loader)) {}
 
-  bool SeekFile(file_id_t file_id, ParquetFile *file) const { return false; }
+  bool SeekFile(const std::string &file_name, ParquetFile *file) const { return false; }
 
  private:
   std::unique_ptr<LocalDiskFileLoader> local_loader_;

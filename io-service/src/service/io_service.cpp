@@ -169,14 +169,14 @@ arrow::Status IOService::ReadTable(const std::string &table_name, const std::vec
   return arrow::Status::OK();
 }
 
-arrow::Status IOService::RetrieveFiles(const std::vector<file_id_t> &file_list, std::optional<std::vector<int>> indices,
+arrow::Status IOService::RetrieveFiles(const std::vector<std::string> &file_list, std::optional<std::vector<int>> indices,
                                        std::vector<std::shared_ptr<arrow::Table>> *out) {
   ParquetFile file;
   bool select_colums = indices.has_value();
 
-  for (auto file_id : file_list) {
-    if (!buffer_pool_manager_->FetchFile(file_id, &file)) {
-      return arrow::Status::Invalid(fmt::format("couldn't load file {}", file_id));
+  for (const auto &filename  : file_list) {
+    if (!buffer_pool_manager_->FetchFile(filename, &file)) {
+      return arrow::Status::Invalid(fmt::format("couldn't load file {}", filename));
     }
 
     std::shared_ptr<arrow::Table> table;
@@ -187,7 +187,7 @@ arrow::Status IOService::RetrieveFiles(const std::vector<file_id_t> &file_list, 
     }
 
     if (table == nullptr) {
-      return arrow::Status::Invalid(fmt::format("couldn't load file {} with indices", file_id));
+      return arrow::Status::Invalid(fmt::format("couldn't load file {} with indices", filename));
     }
 
     out->push_back(std::move(table));

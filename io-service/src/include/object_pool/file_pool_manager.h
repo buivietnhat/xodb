@@ -10,15 +10,19 @@ class FilePoolManager : public ObjectPoolManager {
  public:
   using ObjectPoolManager::ObjectPoolManager;
 
-  bool FetchFile(file_id_t file_id, ParquetFile *file);
+  bool FetchFile(const std::string &file_id, ParquetFile *file);
 
  private:
   virtual void LoadFileCachedCorrespondToFrame(frame_id_t frame_id, ParquetFile *file) = 0;
 
   // the file is not cached, seek it somewhere
-  virtual bool SeekFileAndUpdateCache(file_id_t file_id, frame_id_t frame_id, ParquetFile *file) = 0;
+  virtual bool SeekFileAndUpdateCache(const std::string &file_name, frame_id_t frame_id, ParquetFile *file) = 0;
 
-  std::unordered_map<file_id_t, frame_id_t> file_table_;
+  virtual std::optional<std::string> GetFileNameOfFrame(frame_id_t frame_id) const = 0;
+
+  virtual void RemoveFrame(frame_id_t frame_id) = 0;
+
+  std::unordered_map<std::string, frame_id_t> file_table_;
 };
 
 }  // namespace xodb
