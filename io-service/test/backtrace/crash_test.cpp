@@ -4,7 +4,6 @@
 
 // NOLINTBEGIN
 
-
 namespace xodb {
 
 TEST(CrashTest, PtrAccess) {

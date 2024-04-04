@@ -1,6 +1,6 @@
 #include "object_pool/object_pool_manager.h"
-#include "object_pool/lru_replacer.h"
 #include "gtest/gtest.h"
+#include "object_pool/lru_replacer.h"
 
 namespace xodb {
 

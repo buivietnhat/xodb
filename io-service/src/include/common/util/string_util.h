@@ -102,7 +102,6 @@ class StringUtil {
    * @return a new string with all occurrences of `from` replaced with `to`.
    */
   static auto Replace(std::string source, const std::string &from, const std::string &to) -> std::string;
-
 };
 
 }  // namespace xodb

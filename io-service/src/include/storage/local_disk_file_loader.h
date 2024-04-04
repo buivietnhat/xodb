@@ -11,7 +11,7 @@ namespace xodb {
 class LocalDiskFileLoader : public FilePoolManager {
  public:
   LocalDiskFileLoader(size_t max_size, std::unique_ptr<LRUReplacer<frame_id_t>> replacer,
-                  std::shared_ptr<arrow::fs::FileSystem> root);
+                      std::shared_ptr<arrow::fs::FileSystem> root);
 
  private:
   void LoadFileCachedCorrespondToFrame(frame_id_t frame_id, ParquetFile *file) override;

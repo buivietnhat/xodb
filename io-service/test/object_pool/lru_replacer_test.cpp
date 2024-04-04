@@ -1,5 +1,5 @@
-#include "gtest/gtest.h"
 #include "object_pool/lru_replacer.h"
+#include "gtest/gtest.h"
 
 namespace xodb {
 

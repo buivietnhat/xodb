@@ -3,8 +3,8 @@
 #include <list>
 #include <memory>
 #include <optional>
-#include "object_pool/lru_replacer.h"
 #include "common/config.h"
+#include "object_pool/lru_replacer.h"
 
 namespace xodb {
 

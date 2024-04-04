@@ -2,9 +2,9 @@
 
 #include <list>
 #include <unordered_map>
-#include "object_pool/replacer.h"
 #include "common/concepts.h"
 #include "common/macros.h"
+#include "object_pool/replacer.h"
 
 namespace xodb {
 
@@ -59,7 +59,7 @@ class LRUReplacer : public Replacer<Item> {
     auto pos = index_[item];
     history_.erase(pos);
     index_.erase(item);
-    
+
     return true;
   }
 
