@@ -15,6 +15,8 @@ class BufferPoolManager : public FilePoolManager {
  public:
   BufferPoolManager(size_t size, LocalDiskFileLoader *file_loader, std::unique_ptr<LRUReplacer<frame_id_t>> replacer);
 
+  DISALLOW_COPY_AND_MOVE(BufferPoolManager);
+
  private:
   void LoadFileCachedCorrespondToFrame(frame_id_t frame_id, ParquetFile *file) override;
 

@@ -13,6 +13,8 @@ class LocalDiskFileLoader : public FilePoolManager {
   LocalDiskFileLoader(size_t max_size, std::unique_ptr<LRUReplacer<frame_id_t>> replacer,
                       std::shared_ptr<arrow::fs::FileSystem> root);
 
+  DISALLOW_COPY_AND_MOVE(LocalDiskFileLoader);
+
  private:
   void LoadFileCachedCorrespondToFrame(frame_id_t frame_id, ParquetFile *file) override;
 

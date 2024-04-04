@@ -9,9 +9,11 @@
 namespace xodb {
 
 template <typename Item>
-  requires Hashable<Item>
+requires Hashable<Item>
 class LRUReplacer : public Replacer<Item> {
   using Pos = typename std::list<Item>::iterator;
+
+  DISALLOW_COPY_AND_MOVE(LRUReplacer);
 
  public:
   LRUReplacer(size_t max_item) : max_num_items_(max_item) {}

@@ -169,12 +169,13 @@ arrow::Status IOService::ReadTable(const std::string &table_name, const std::vec
   return arrow::Status::OK();
 }
 
-arrow::Status IOService::RetrieveFiles(const std::vector<std::string> &file_list, std::optional<std::vector<int>> indices,
+arrow::Status IOService::RetrieveFiles(const std::vector<std::string> &file_list,
+                                       std::optional<std::vector<int>> indices,
                                        std::vector<std::shared_ptr<arrow::Table>> *out) {
   ParquetFile file;
   bool select_colums = indices.has_value();
 
-  for (const auto &filename  : file_list) {
+  for (const auto &filename : file_list) {
     if (!buffer_pool_manager_->FetchFile(filename, &file)) {
       return arrow::Status::Invalid(fmt::format("couldn't load file {}", filename));
     }
