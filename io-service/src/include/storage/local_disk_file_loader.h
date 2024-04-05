@@ -15,7 +15,6 @@ class LocalDiskFileLoader : public FilePoolManager {
 
   DISALLOW_COPY_AND_MOVE(LocalDiskFileLoader);
 
- private:
   void LoadFileCachedCorrespondToFrame(frame_id_t frame_id, ParquetFile *file) override;
 
   bool SeekFileAndUpdateCache(const std::string &file_name, frame_id_t frame_id, ParquetFile *file) override;
@@ -26,7 +25,6 @@ class LocalDiskFileLoader : public FilePoolManager {
 
   arrow::Status LoadFile(const std::string &filename, ParquetFile *file);
 
- private:
   std::vector<std::string> file_names_;
   std::shared_ptr<arrow::fs::FileSystem> root_;
 };

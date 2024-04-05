@@ -12,13 +12,13 @@ namespace xodb {
  * */
 class ParquetFile {
  public:
-  std::shared_ptr<arrow::Table> GetTable() const { return table_; }
+  const std::shared_ptr<arrow::Table> &GetTable() const { return table_; }
 
   ParquetFile() = default;
 
   ParquetFile(std::shared_ptr<arrow::Table> table, std::string file_name)
       : table_(std::move(table)), file_name_(std::move(file_name)) {
-    XODB_ASSERT(file_name != "", "file id must be valid");
+    XODB_ASSERT(file_name_ != "", "file id must be valid");
   }
 
   std::shared_ptr<arrow::Table> GetTable(const std::vector<int> &indices) const {
@@ -34,9 +34,7 @@ class ParquetFile {
 
   const std::string &GetFileName() const { return file_name_; }
 
-  void Invalidate() {
-    file_name_ = "";
-  }
+  void Invalidate() { file_name_ = ""; }
 
  private:
   std::shared_ptr<arrow::Table> table_;
