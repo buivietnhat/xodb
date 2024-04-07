@@ -9,7 +9,7 @@
 namespace xodb {
 
 template <typename Item>
-requires Hashable<Item>
+  requires Hashable<Item>
 class LRUReplacer : public Replacer<Item> {
   using Pos = typename std::list<Item>::iterator;
 

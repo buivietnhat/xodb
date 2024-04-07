@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # For clang-tidy.
 set(CMAKE_CXX_STANDARD 20) # Compile as C++20.
-set(CMAKE_CXX_STANDARD_REQUIRED ON) # Require C++17 support.
+set(CMAKE_CXX_STANDARD_REQUIRED ON) # Require C++20 support.
 
 project(IOService
         VERSION 1.0
