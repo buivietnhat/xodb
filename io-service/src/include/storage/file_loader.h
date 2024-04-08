@@ -7,16 +7,16 @@
 
 namespace xodb {
 
-class FileLoader {
- public:
-  FileLoader(std::unique_ptr<LocalDiskFileLoader> local_loader, std::unique_ptr<S3FileLoader> remote_loader)
-      : local_loader_(std::move(local_loader)), remote_loader_(std::move(remote_loader)) {}
-
-  bool SeekFile(const std::string &file_name, ParquetFile *file) const { return false; }
-
- private:
-  std::unique_ptr<LocalDiskFileLoader> local_loader_;
-  std::unique_ptr<S3FileLoader> remote_loader_;
-};
+//class FileLoader {
+// public:
+//  FileLoader(std::unique_ptr<LocalDiskFileLoader> local_loader, std::unique_ptr<S3FileLoader> remote_loader)
+//      : local_loader_(std::move(local_loader)), remote_loader_(std::move(remote_loader)) {}
+//
+//  bool SeekFile(const std::string &file_name, ParquetFile *file) const { return false; }
+//
+// private:
+//  std::unique_ptr<LocalDiskFileLoader> local_loader_;
+//  std::unique_ptr<S3FileLoader> remote_loader_;
+//};
 
 }  // namespace xodb

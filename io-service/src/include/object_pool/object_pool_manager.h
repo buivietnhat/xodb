@@ -46,6 +46,7 @@ class ObjectPoolManager {
     return frame_id;
   }
 
+
  protected:
   size_t size_{0};
   std::unique_ptr<LRUReplacer<frame_id_t>> replacer_;

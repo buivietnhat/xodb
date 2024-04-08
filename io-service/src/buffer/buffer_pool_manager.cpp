@@ -16,17 +16,6 @@ void BufferPoolManager::LoadFileCachedCorrespondToFrame(frame_id_t frame_id, Par
   *file = files_[frame_id];
 }
 
-bool BufferPoolManager::SeekFileAndUpdateCache(const std::string &file_name, frame_id_t frame_id, ParquetFile *file) {
-  XODB_ASSERT(frame_id < size_, "");
-
-  if (!file_loader_->FetchFile(file_name, file)) {
-    return false;
-  }
-
-  files_[frame_id] = *file;
-  return true;
-}
-
 std::optional<std::string> BufferPoolManager::GetFileNameOfFrame(frame_id_t frame_id) const {
   XODB_ASSERT(frame_id < size_ && files_[frame_id].Valid(), "validate check");
 
@@ -36,6 +25,17 @@ std::optional<std::string> BufferPoolManager::GetFileNameOfFrame(frame_id_t fram
 void BufferPoolManager::RemoveFrame(frame_id_t frame_id) {
   XODB_ASSERT(frame_id < size_ && files_[frame_id].Valid(), "validate check");
   files_[frame_id].Invalidate();
+}
+
+bool BufferPoolManager::SeekFile(const std::string &file_name, ParquetFile *file) {
+  XODB_ASSERT(file != nullptr, "");
+
+  return file_loader_->FetchFile(file_name, file);
+}
+
+void BufferPoolManager::UpdateCache(frame_id_t frame_id, ParquetFile *file) {
+  XODB_ASSERT(file != nullptr, "");
+  files_[frame_id] = *file;
 }
 
 }  // namespace xodb

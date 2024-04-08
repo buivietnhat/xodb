@@ -20,7 +20,11 @@ class BufferPoolManager : public FilePoolManager {
  private:
   void LoadFileCachedCorrespondToFrame(frame_id_t frame_id, ParquetFile *file) override;
 
-  bool SeekFileAndUpdateCache(const std::string &file_name, frame_id_t frame_id, ParquetFile *file) override;
+  bool SeekFile(const std::string &file_name, ParquetFile *file) override;
+
+  void UpdateCache(frame_id_t frame_id, ParquetFile *file) override;
+
+  //  bool SeekFileAndUpdateCache(const std::string &file_name, frame_id_t frame_id, ParquetFile *file) override;
 
   std::optional<std::string> GetFileNameOfFrame(frame_id_t frame_id) const override;
 

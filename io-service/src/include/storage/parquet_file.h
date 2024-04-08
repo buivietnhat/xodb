@@ -36,6 +36,10 @@ class ParquetFile {
 
   void Invalidate() { file_name_ = ""; }
 
+  void SetFileName(std::string file_name) {
+    file_name_ = std::move(file_name);
+  }
+
  private:
   std::shared_ptr<arrow::Table> table_;
   std::string file_name_{""};
