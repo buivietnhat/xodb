@@ -20,7 +20,9 @@ class LocalDiskFileLoader : public FilePoolManager {
 
   arrow::Status LoadFile(const std::string &filename, ParquetFile *file);
 
-  //  bool SeekFileAndUpdateCache(const std::string &file_name, frame_id_t frame_id, ParquetFile *file) override;
+  // warm up cache, incase after restart
+  arrow::Status WarmUp();
+
  private:
   arrow::Status CreateFile(const std::string &file_name, std::shared_ptr<arrow::Table> table) const {
     ARROW_ASSIGN_OR_RAISE(auto sink, root_->OpenOutputStream(file_name));

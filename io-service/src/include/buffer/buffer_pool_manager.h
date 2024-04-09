@@ -24,13 +24,12 @@ class BufferPoolManager : public FilePoolManager {
 
   void UpdateCache(frame_id_t frame_id, ParquetFile *file) override;
 
-  //  bool SeekFileAndUpdateCache(const std::string &file_name, frame_id_t frame_id, ParquetFile *file) override;
-
   std::optional<std::string> GetFileNameOfFrame(frame_id_t frame_id) const override;
 
   void RemoveFrame(frame_id_t frame_id) override;
 
   std::vector<ParquetFile> files_;
+
   LocalDiskFileLoader *file_loader_{nullptr};
 };
 

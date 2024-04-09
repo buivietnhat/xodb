@@ -12,6 +12,9 @@ class FilePoolManager : public ObjectPoolManager {
 
   bool FetchFile(const std::string &file_name, ParquetFile *file);
 
+ protected:
+  frame_id_t AddFileToPool(const std::string &file_names);
+
  private:
   virtual void LoadFileCachedCorrespondToFrame(frame_id_t frame_id, ParquetFile *file) = 0;
 

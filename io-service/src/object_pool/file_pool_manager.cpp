@@ -46,5 +46,17 @@ bool FilePoolManager::FetchFile(const std::string &file_name, ParquetFile *file)
   return true;
 }
 
+frame_id_t FilePoolManager::AddFileToPool(const std::string &file_name) {
+  XODB_ENSURE(!available_frames_.empty(), "must still have free slot");
+
+  bool evicted = false;
+  auto free_frame = GetFrame(evicted);
+  XODB_ENSURE(free_frame.has_value(), "must success")
+  XODB_ENSURE(evicted == false, "should not do");
+
+  file_table_[file_name] = *free_frame;
+
+  return *free_frame;
+}
 
 }  // namespace xodb

@@ -2,36 +2,10 @@
 #include <arrow/api.h>
 #include <arrow/filesystem/localfs.h>
 #include "gtest/gtest.h"
-#include "mock_s3_file_loader.h"
+#include "storage/mock_s3_file_loader.h"
 
 namespace xodb {
 
-bool AreTablesEqual(const std::shared_ptr<arrow::Table> &table1, const std::shared_ptr<arrow::Table> &table2) {
-  // Check if schemas are equal
-  if (!table1->schema()->Equals(*table2->schema())) {
-    return false;
-  }
-
-  // Check if record batches are equal
-  if (table1->num_rows() != table2->num_rows()) {
-    return false;
-  }
-
-  // Iterate over each column
-  for (int i = 0; i < table1->num_columns(); ++i) {
-    // Get the arrays for each column in both tables
-    auto array1 = table1->column(i)->chunk(0);
-    auto array2 = table2->column(i)->chunk(0);
-
-    // Check if arrays are equal
-    if (!array1->Equals(array2)) {
-      return false;
-    }
-  }
-
-  // Tables are equal
-  return true;
-}
 
 class LocalDiskFileLoaderTest : public ::testing::Test {
  protected:

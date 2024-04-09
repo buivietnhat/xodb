@@ -21,26 +21,6 @@ void LocalDiskFileLoader::LoadFileCachedCorrespondToFrame(frame_id_t frame_id, P
   XODB_ENSURE(LoadFile(filename, file) == arrow::Status::OK(), "must be success");
 }
 
-// bool LocalDiskFileLoader::SeekFileAndUpdateCache(const std::string &file_name, frame_id_t frame_id, ParquetFile
-// *file) {
-//   XODB_ASSERT(frame_id < size_, "");
-//   XODB_ASSERT(file != nullptr, "");
-//
-//   bool ok = s3_loader_->FetchFile(file_name, file);
-//   if (!ok) {
-//     return false;
-//   }
-//
-//   file_names_[frame_id] = file_name;
-//
-//// return CreateFile(file_name, file->GetTable()) == arrow::Status::OK();
-//  auto status = CreateFile(file_name, file->GetTable());
-//  if (status != arrow::Status::OK()) {
-//    std::cout << status.message() << std::endl;
-//  }
-//  return status == arrow::Status::OK();
-//}
-
 std::optional<std::string> LocalDiskFileLoader::GetFileNameOfFrame(frame_id_t frame_id) const {
   XODB_ASSERT(frame_id < size_, "");
   return file_names_[frame_id];
@@ -79,6 +59,27 @@ void LocalDiskFileLoader::UpdateCache(frame_id_t frame_id, ParquetFile *file) {
   file_names_[frame_id] = file_name;
 
   XODB_ENSURE(CreateFile(file_name, file->GetTable()) == arrow::Status::OK(), "must be success");
+}
+
+arrow::Status LocalDiskFileLoader::WarmUp() {
+  arrow::fs::FileSelector selector;
+  selector.base_dir = "/";
+
+  ARROW_ASSIGN_OR_RAISE(auto listing, root_->GetFileInfo(selector));
+
+  for (const auto &file_info : listing) {
+    if (!file_info.IsFile() || file_info.extension() != "parquet") {
+      continue;
+    }
+
+    auto file_name = file_info.base_name();
+    auto frame_id = AddFileToPool(file_name);
+    file_names_[frame_id] = file_name;
+
+//    std::cout << "add file " << file_name << " to the cache" << std::endl;
+  }
+
+  return arrow::Status::OK();
 }
 
 }  // namespace xodb
