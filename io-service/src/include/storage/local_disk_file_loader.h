@@ -24,11 +24,7 @@ class LocalDiskFileLoader : public FilePoolManager {
   arrow::Status WarmUp();
 
  private:
-  arrow::Status CreateFile(const std::string &file_name, std::shared_ptr<arrow::Table> table) const {
-    ARROW_ASSIGN_OR_RAISE(auto sink, root_->OpenOutputStream(file_name));
-    ARROW_RETURN_NOT_OK(parquet::arrow::WriteTable(*table, arrow::default_memory_pool(), sink, /*chunk_size=*/65536));
-    return arrow::Status::OK();
-  }
+  arrow::Status CreateFile(const std::string &file_name, std::shared_ptr<arrow::Table> table) const;
 
   bool SeekFile(const std::string &file_name, ParquetFile *file) override;
 

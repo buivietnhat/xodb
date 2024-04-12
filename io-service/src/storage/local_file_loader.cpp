@@ -1,5 +1,6 @@
 #include <arrow/api.h>
 #include "storage/local_disk_file_loader.h"
+#include "common/util/arrow_file_util.h"
 
 namespace xodb {
 
@@ -11,6 +12,8 @@ LocalDiskFileLoader::LocalDiskFileLoader(size_t max_size, std::unique_ptr<LRURep
   XODB_ASSERT(s3_loader_ != nullptr, "s3 loader must not be null");
 
   file_names_.resize(max_size, "");
+
+  XODB_ASSERT(WarmUp() == arrow::Status::OK(), "must success");
 }
 
 void LocalDiskFileLoader::LoadFileCachedCorrespondToFrame(frame_id_t frame_id, ParquetFile *file) {
@@ -62,23 +65,23 @@ void LocalDiskFileLoader::UpdateCache(frame_id_t frame_id, ParquetFile *file) {
 }
 
 arrow::Status LocalDiskFileLoader::WarmUp() {
-  arrow::fs::FileSelector selector;
-  selector.base_dir = "/";
+  std::vector<std::string> filenames;
+  ARROW_RETURN_NOT_OK(FileUtil::ListAllFiles(root_, "parquet", filenames, true));
 
-  ARROW_ASSIGN_OR_RAISE(auto listing, root_->GetFileInfo(selector));
-
-  for (const auto &file_info : listing) {
-    if (!file_info.IsFile() || file_info.extension() != "parquet") {
-      continue;
-    }
-
-    auto file_name = file_info.base_name();
-    auto frame_id = AddFileToPool(file_name);
-    file_names_[frame_id] = file_name;
-
-//    std::cout << "add file " << file_name << " to the cache" << std::endl;
+  for (const auto &filename : filenames) {
+    auto frame_id = AddFileToPool(filename);
+    file_names_[frame_id] = filename;
+    std::cout << "add file " << filename << " to the cache" << std::endl;
   }
 
+
+  return arrow::Status::OK();
+}
+
+arrow::Status LocalDiskFileLoader::CreateFile(const std::string &file_name, std::shared_ptr<arrow::Table> table) const {
+  ARROW_ASSIGN_OR_RAISE(auto sink, root_->OpenOutputStream(file_name));
+  ARROW_RETURN_NOT_OK(parquet::arrow::WriteTable(*table, arrow::default_memory_pool(), sink, /*chunk_size=*/65536));
+  ARROW_RETURN_NOT_OK(sink->Close());
   return arrow::Status::OK();
 }
 

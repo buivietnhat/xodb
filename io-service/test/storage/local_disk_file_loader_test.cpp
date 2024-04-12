@@ -2,10 +2,10 @@
 #include <arrow/api.h>
 #include <arrow/filesystem/localfs.h>
 #include "gtest/gtest.h"
+#include "storage/file_ultil_for_test.h"
 #include "storage/mock_s3_file_loader.h"
 
 namespace xodb {
-
 
 class LocalDiskFileLoaderTest : public ::testing::Test {
  protected:
