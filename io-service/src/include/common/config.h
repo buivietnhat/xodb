@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdio>
+#include <cstdint>
 
 namespace xodb {
 
@@ -11,5 +12,6 @@ using table_oid_t = size_t;
 // static const char *INVALID_FILE_ID = "invalid";
 static constexpr frame_id_t INVALID_FRAME_ID = INT32_MAX;
 static constexpr table_oid_t INVALID_TABLE_ID = INT32_MAX;
+[[maybe_unused]] static const char *PARQUET = "parquet";
 
 }  // namespace xodb

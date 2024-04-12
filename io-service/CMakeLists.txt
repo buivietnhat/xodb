@@ -165,6 +165,7 @@ file(GLOB_RECURSE
 set(THIRDPARTY_LIBS
         Arrow::arrow_shared
         arrow_flight parquet
+        fmt
 )
 
 add_library(ioservice STATIC ${IOSERVICE_SRCS}

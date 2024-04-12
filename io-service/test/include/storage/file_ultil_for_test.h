@@ -3,9 +3,9 @@
 #include <arrow/api.h>
 #include <arrow/filesystem/filesystem.h>
 #include <arrow/flight/api.h>
-#include "common/macros.h"
 #include <parquet/arrow/reader.h>
 #include <parquet/arrow/writer.h>
+#include "common/macros.h"
 
 namespace xodb {
 
@@ -38,7 +38,8 @@ inline bool AreTablesEqual(const std::shared_ptr<arrow::Table> &table1, const st
 
 arrow::Status CreateParquetFileIntString(arrow::fs::FileSystem *fs, const std::string &file_path,
                                          const std::vector<int32_t> &int_data,
-                                         const std::vector<std::string> &string_data) {
+                                         const std::vector<std::string> &string_data,
+                                         std::optional<std::shared_ptr<arrow::Table> *> out = {}) {
   XODB_ASSERT(int_data.size() == string_data.size(), "two columns must have equal size");
 
   ARROW_ASSIGN_OR_RAISE(auto sink, fs->OpenOutputStream(file_path));
@@ -57,13 +58,19 @@ arrow::Status CreateParquetFileIntString(arrow::fs::FileSystem *fs, const std::s
   ARROW_ASSIGN_OR_RAISE(string_array, string_builder.Finish());
 
   auto table = arrow::Table::Make(schema, {int_array, string_array});
+
+  if (out.has_value()) {
+    XODB_ASSERT(*out != nullptr, "");
+    *(*out) = table;
+  }
   ARROW_RETURN_NOT_OK(parquet::arrow::WriteTable(*table, arrow::default_memory_pool(), sink, /*chunk_size=*/65536));
   return arrow::Status::OK();
 }
 
 arrow::Status CreateParquetFileStringString(arrow::fs::FileSystem *fs, const std::string &file_path,
                                             const std::vector<std::string> &string_data1,
-                                            const std::vector<std::string> &string_data2) {
+                                            const std::vector<std::string> &string_data2,
+                                            std::optional<std::shared_ptr<arrow::Table> *> out = {}) {
   XODB_ASSERT(string_data1.size() == string_data2.size(), "two columns must have equal size");
 
   ARROW_ASSIGN_OR_RAISE(auto sink, fs->OpenOutputStream(file_path));
@@ -82,12 +89,17 @@ arrow::Status CreateParquetFileStringString(arrow::fs::FileSystem *fs, const std
   ARROW_ASSIGN_OR_RAISE(string_array2, string_builder2.Finish());
 
   auto table = arrow::Table::Make(schema, {string_array1, string_array2});
+  if (out.has_value()) {
+    XODB_ASSERT(*out != nullptr, "");
+    *(*out) = table;
+  }
   ARROW_RETURN_NOT_OK(parquet::arrow::WriteTable(*table, arrow::default_memory_pool(), sink, /*chunk_size=*/65536));
   return arrow::Status::OK();
 }
 
 arrow::Status CreateParquetFileIntInt(arrow::fs::FileSystem *fs, const std::string &file_path,
-                                      const std::vector<int32_t> &int_data1, const std::vector<int32_t> &int_data2) {
+                                      const std::vector<int32_t> &int_data1, const std::vector<int32_t> &int_data2,
+                                      std::optional<std::shared_ptr<arrow::Table> *> out = {}) {
   XODB_ASSERT(int_data1.size() == int_data2.size(), "two columns must have equal size");
 
   ARROW_ASSIGN_OR_RAISE(auto sink, fs->OpenOutputStream(file_path));
@@ -107,6 +119,10 @@ arrow::Status CreateParquetFileIntInt(arrow::fs::FileSystem *fs, const std::stri
   ARROW_ASSIGN_OR_RAISE(int_array2, int_builder2.Finish());
 
   auto table = arrow::Table::Make(schema, {int_array1, int_array2});
+  if (out.has_value()) {
+    XODB_ASSERT(*out != nullptr, "");
+    *(*out) = table;
+  }
   ARROW_RETURN_NOT_OK(parquet::arrow::WriteTable(*table, arrow::default_memory_pool(), sink, /*chunk_size=*/65536));
   return arrow::Status::OK();
 }

@@ -66,14 +66,12 @@ void LocalDiskFileLoader::UpdateCache(frame_id_t frame_id, ParquetFile *file) {
 
 arrow::Status LocalDiskFileLoader::WarmUp() {
   std::vector<std::string> filenames;
-  ARROW_RETURN_NOT_OK(FileUtil::ListAllFiles(root_, "parquet", filenames, true));
+  ARROW_RETURN_NOT_OK(FileUtil::ListAllFiles(root_, PARQUET, filenames, true));
 
   for (const auto &filename : filenames) {
     auto frame_id = AddFileToPool(filename);
     file_names_[frame_id] = filename;
-    std::cout << "add file " << filename << " to the cache" << std::endl;
   }
-
 
   return arrow::Status::OK();
 }

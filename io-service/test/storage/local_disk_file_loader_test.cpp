@@ -59,9 +59,6 @@ TEST_F(LocalDiskFileLoaderTest, LoadFileTest) {
   EXPECT_EQ(ldfl.LoadFile(DUMMY_FILE, &file), arrow::Status::OK());
   EXPECT_EQ(file.GetFileName(), DUMMY_FILE);
   EXPECT_TRUE(AreTablesEqual(file.GetTable(), table_));
-
-  //  arrow::PrettyPrintOptions print_options(/*indent=*/0, /*window=*/2);
-  //  EXPECT_EQ(arrow::PrettyPrint(*file.GetTable(), print_options, &std::cout), arrow::Status::OK());
 }
 
 TEST_F(LocalDiskFileLoaderTest, FetchFileTest) {
