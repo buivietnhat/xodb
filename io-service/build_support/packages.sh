@@ -88,9 +88,9 @@ install_linux() {
   # Install packages.
   apt-get -y install \
       build-essential \
-      clang-15 \
-      clang-format-15 \
-      clang-tidy-15 \
+      clang-14 \
+      clang-format-14 \
+      clang-tidy-14 \
       cmake \
       doxygen \
       git \
@@ -98,28 +98,6 @@ install_linux() {
       zlib1g-dev \
       libelf-dev \
       libdwarf-dev
-
-  # Install apache arrow lib
-  apt-get install -y -V ca-certificates lsb-release wget
-  wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
-  apt-get install -y -V ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
-  apt-get -y update
-  apt install -y -V \
-      libarrow-dev \
-      libarrow-glib-dev \
-      libarrow-dataset-dev \
-      libarrow-dataset-glib-dev \
-      libarrow-acero-dev \
-      libarrow-flight-dev \
-      libarrow-flight-glib-dev \
-      libarrow-flight-sql-dev \
-      libarrow-flight-sql-glib-dev \
-      libgandiva-dev \
-      libgandiva-glib-dev \
-      libparquet-dev \
-      libparquet-glib-dev
-
-
 }
 
 main "$@"
