@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option java_package = "com.xodb.catalog";
+option java_multiple_files = true;
+option java_outer_classname = "XodbCatalogProtos";
+
+message FileInfo {
+  string fileName = 1;
+  int64 fileSize = 2;
+  string s3BucketName = 3;
+}
+
+message Schema {
+  string schema = 1;
+}
+
+message TableInfo {
+  string name = 1;
+  Schema schema = 2;
+  repeated TableInfo fileInfos = 3;
+}

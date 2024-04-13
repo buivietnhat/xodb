@@ -18,4 +18,5 @@ public class ErrorResponseDto {
     this.errorMessage = errorMessage;
     this.timestamp = timestamp;
   }
+
 }

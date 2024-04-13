@@ -1,10 +1,13 @@
 package com.xodb.catalog.dto;
 
+import lombok.Data;
+
 import java.util.List;
 
+@Data
 public class TableInfoDto {
-  String name;
+  private String name;
   private SchemaDto schema;
-  long tableObjId;
-  List<FileInfoDto> fileList;
+  private long tableObjId;
+  private List<FileInfoDto> fileList;
 }
