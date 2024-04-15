@@ -27,8 +27,6 @@ arrow::Status FileUtil::ListAllFiles(std::shared_ptr<arrow::fs::FileSystem> root
                                      std::optional<arrow::fs::FileSelector> selector, const std::string &path) {
   XODB_ASSERT(root != nullptr, "");
 
-  XODB_ASSERT(root != nullptr, "");
-
   if (!selector.has_value()) {
     selector = arrow::fs::FileSelector();
   }

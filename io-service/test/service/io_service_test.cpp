@@ -2,10 +2,10 @@
 #include <arrow/api.h>
 #include <arrow/filesystem/localfs.h>
 #include <memory>
-#include "common/util/arrow_file_util.h"
 #include "gtest/gtest.h"
 #include "storage/file_ultil_for_test.h"
 #include "storage/mock_s3_file_loader.h"
+#include "common/util/arrow_file_util.h"
 
 namespace xodb {
 
@@ -63,10 +63,6 @@ class IoServiceTest : public ::testing::Test {
 
   std::shared_ptr<arrow::fs::FileSystem> fs_;
   const std::vector<std::string> table_names_{"foo", "bar", "zoo"};
-
-  //  std::shared_ptr<arrow::Table> foo_table_;
-  //  std::shared_ptr<arrow::Table> bar_table_;
-  //  std::shared_ptr<arrow::Table> zoo_table_;
 };
 
 TEST_F(IoServiceTest, RecoverTest) {
@@ -112,7 +108,7 @@ TEST_F(IoServiceTest, ReadFullTableTest) {
 
   std::vector<std::vector<int>> columns(2, std::vector<int>());
   for (int i = 0; i < 2; i++) {
-    // we have three chunk since the table is concatinated by 3 files
+    // we have three chunks since the table is concatenated by 3 files
     auto num_chunks = table_out->column(i)->num_chunks();
     EXPECT_EQ(3, num_chunks);
     for (int c = 0; c < num_chunks; c++) {
@@ -130,6 +126,40 @@ TEST_F(IoServiceTest, ReadFullTableTest) {
   std::vector<int> ground_truth{1, 2, 3, 4, 5, 6};
   EXPECT_EQ(ground_truth, columns[0]);
   EXPECT_EQ(ground_truth, columns[1]);
+}
+
+TEST_F(IoServiceTest, ReadTableWithSelectedColumnTest) {
+  auto root = std::make_shared<arrow::fs::SubTreeFileSystem>("./test/", fs_);
+
+  const int buffer_mem_size = 5;
+  const int buffer_disk_size = 9;
+
+  auto bmp = CreateBufferPoolManager(buffer_mem_size, buffer_disk_size, root);
+  IOService io_service{root, &bmp};
+  EXPECT_EQ(arrow::Status::OK(), io_service.Recover());
+
+  std::vector<std::string> column_names{"string_column"};
+  auto table_out = io_service.ReadTable("bar", column_names);
+  EXPECT_TRUE(table_out != nullptr);
+
+//  FileUtil::PrintPretty(table_out);
+
+  EXPECT_EQ(1, table_out->num_columns());
+  std::vector<std::string> ground_truth{"1", "2", "3", "4", "5", "6"};
+
+  EXPECT_EQ(3, table_out->column(0)->num_chunks());
+
+  std::vector<std::string> actual_string_column;
+
+  for (int i = 0; i < 3; i++) {
+    auto chunk = std::static_pointer_cast<arrow::StringArray>(table_out->column(0)->chunk(i));
+    for (int j = 0; j < chunk->length(); j++) {
+      actual_string_column.push_back(std::string(chunk->Value(j)));
+    }
+  }
+
+  std::sort(actual_string_column.begin(), actual_string_column.end());
+  EXPECT_EQ(ground_truth, actual_string_column);
 }
 
 }  // namespace xodb
