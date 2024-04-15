@@ -5,7 +5,6 @@
 #include "gtest/gtest.h"
 #include "storage/file_ultil_for_test.h"
 #include "storage/mock_s3_file_loader.h"
-#include "common/util/arrow_file_util.h"
 
 namespace xodb {
 
@@ -142,7 +141,7 @@ TEST_F(IoServiceTest, ReadTableWithSelectedColumnTest) {
   auto table_out = io_service.ReadTable("bar", column_names);
   EXPECT_TRUE(table_out != nullptr);
 
-//  FileUtil::PrintPretty(table_out);
+  //  FileUtil::PrintPretty(table_out);
 
   EXPECT_EQ(1, table_out->num_columns());
   std::vector<std::string> ground_truth{"1", "2", "3", "4", "5", "6"};

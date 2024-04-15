@@ -13,5 +13,7 @@ using table_oid_t = size_t;
 static constexpr frame_id_t INVALID_FRAME_ID = INT32_MAX;
 static constexpr table_oid_t INVALID_TABLE_ID = INT32_MAX;
 [[maybe_unused]] static const char *PARQUET = "parquet";
+[[maybe_unused]] static const char *TABLE_KEY_NAME = "table";
+[[maybe_unused]] static const char *COLUMNS_KEY_NAME = "columns";
 
 }  // namespace xodb

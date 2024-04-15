@@ -125,6 +125,7 @@ set(IOSERVICE_THIRD_PARTY_INCLUDE_DIR
         ${PROJECT_SOURCE_DIR}/third_party
         ${PROJECT_SOURCE_DIR}/third_party/fmt/include
         ${PROJECT_SOURCE_DIR}/third_party/backward-cpp
+        ${PROJECT_SOURCE_DIR}/third_party/json/include
 )
 
 # Src files
