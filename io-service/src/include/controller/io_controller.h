@@ -9,7 +9,10 @@ namespace xodb {
 
 class IOController : public arrow::flight::FlightServerBase {
  public:
-  explicit IOController(std::unique_ptr<IOService> service);
+  explicit IOController(std::unique_ptr<IOService> service) : service_(std::move(service)) {
+    XODB_ASSERT(service_ != nullptr, "");
+    service_->Recover();
+  }
 
   //  arrow::Status DoPut(const arrow::flight::ServerCallContext &,
   //                      std::unique_ptr<arrow::flight::FlightMessageReader> reader,
