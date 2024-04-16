@@ -3,10 +3,10 @@
 
 namespace xodb {
 
-BufferPoolManager::BufferPoolManager(size_t size, LocalDiskFileLoader *file_loader,
+BufferPoolManager::BufferPoolManager(size_t size, std::unique_ptr<LocalDiskFileLoader> file_loader,
                                      std::unique_ptr<LRUReplacer<frame_id_t>> replacer)
-    : FilePoolManager(size, std::move(replacer)), file_loader_(file_loader) {
-  XODB_ASSERT(file_loader != nullptr, "file loader must not be null");
+    : FilePoolManager(size, std::move(replacer)), file_loader_(std::move(file_loader)) {
+  XODB_ASSERT(file_loader_ != nullptr, "file loader must not be null");
   files_.resize(size);
 }
 

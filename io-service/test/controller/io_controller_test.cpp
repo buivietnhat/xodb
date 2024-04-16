@@ -57,13 +57,14 @@ class IoControllerTest : public ::testing::Test {
   static std::unique_ptr<IOService> CreateIOService(size_t buffer_mem_size, size_t buffer_disk_size,
                                                     std::shared_ptr<arrow::fs::FileSystem> root) {
     auto disk_file_replacer = std::make_unique<LRUReplacer<frame_id_t>>(buffer_disk_size);
-    static LocalDiskFileLoader file_loader{buffer_disk_size, std::move(disk_file_replacer), root,
-                                           std::make_unique<MockS3Loader>(root)};
+    auto file_loader = std::make_unique<LocalDiskFileLoader>(buffer_disk_size, std::move(disk_file_replacer), root,
+                                                             std::make_unique<MockS3Loader>(root));
 
     auto buffer_pool_replacer = std::make_unique<LRUReplacer<frame_id_t>>(buffer_mem_size);
-    static BufferPoolManager bpm{buffer_mem_size, &file_loader, std::move(buffer_pool_replacer)};
+    auto bpm =
+        std::make_unique<BufferPoolManager>(buffer_mem_size, std::move(file_loader), std::move(buffer_pool_replacer));
 
-    return std::make_unique<IOService>(root, &bpm);
+    return std::make_unique<IOService>(root, std::move(bpm));
   }
 
   class Client {
@@ -90,7 +91,7 @@ class IoControllerTest : public ::testing::Test {
       std::shared_ptr<arrow::Table> table;
       ARROW_ASSIGN_OR_RAISE(table, stream->ToTable());
 
-      FileUtil::PrintPretty(table);
+//      FileUtil::PrintPretty(table);
       *out = std::move(table);
 
       return arrow::Status::OK();
@@ -172,6 +173,39 @@ TEST_F(IoControllerTest, ReadTableTest) {
   std::vector<int> ground_truth{1, 2, 3, 4, 5, 6};
   EXPECT_EQ(ground_truth, columns[0]);
   EXPECT_EQ(ground_truth, columns[1]);
+}
+
+TEST_F(IoControllerTest, ReadTableWithSelectedColumnsTest) {
+  auto root = std::make_shared<arrow::fs::SubTreeFileSystem>("./test/", fs_);
+
+  std::string host = "localhost";
+  int port = 8080;
+
+  Server server{host, port, std::move(root)};
+  Client client{host, port};
+
+  std::shared_ptr<arrow::Table> table_out;
+  std::vector<std::string> column_names{"string_column"};
+  ASSERT_TRUE(client.ReadTable("bar", column_names, &table_out) == arrow::Status::OK());
+  ASSERT_TRUE(table_out != nullptr);
+
+//
+  EXPECT_EQ(1, table_out->num_columns());
+  std::vector<std::string> ground_truth{"1", "2", "3", "4", "5", "6"};
+
+  EXPECT_EQ(3, table_out->column(0)->num_chunks());
+
+  std::vector<std::string> actual_string_column;
+
+  for (int i = 0; i < 3; i++) {
+    auto chunk = std::static_pointer_cast<arrow::StringArray>(table_out->column(0)->chunk(i));
+    for (int j = 0; j < chunk->length(); j++) {
+      actual_string_column.push_back(std::string(chunk->Value(j)));
+    }
+  }
+
+  std::sort(actual_string_column.begin(), actual_string_column.end());
+  EXPECT_EQ(ground_truth, actual_string_column);
 }
 
 }  // namespace xodb

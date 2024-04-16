@@ -25,10 +25,10 @@ TEST(BufferPoolManagerTest, FetchFileTest) {
               arrow::Status::OK());
 
   auto disk_file_replacer = std::make_unique<LRUReplacer<frame_id_t>>(size);
-  LocalDiskFileLoader file_loader{size, std::move(disk_file_replacer), root, std::make_unique<MockS3Loader>(root)};
+  auto file_loader = std::make_unique<LocalDiskFileLoader>(size, std::move(disk_file_replacer), root, std::make_unique<MockS3Loader>(root));
 
   auto buffer_pool_replacer = std::make_unique<LRUReplacer<frame_id_t>>(size);
-  BufferPoolManager bpm{size, &file_loader, std::move(buffer_pool_replacer)};
+  BufferPoolManager bpm{size, std::move(file_loader), std::move(buffer_pool_replacer)};
 
   std::vector<ParquetFile> files(size);
 

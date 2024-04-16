@@ -9,8 +9,9 @@
 
 namespace xodb {
 
-IOService::IOService(std::shared_ptr<arrow::fs::FileSystem> root, BufferPoolManager *buffer_pool_manager)
-    : root_(std::move(root)), buffer_pool_manager_(buffer_pool_manager) {
+IOService::IOService(std::shared_ptr<arrow::fs::FileSystem> root,
+                     std::unique_ptr<BufferPoolManager> buffer_pool_manager)
+    : root_(std::move(root)), buffer_pool_manager_(std::move(buffer_pool_manager)) {
   XODB_ASSERT(buffer_pool_manager_ != nullptr, "");
 }
 

@@ -47,14 +47,14 @@ class IoServiceTest : public ::testing::Test {
     }
   }
 
-  BufferPoolManager CreateBufferPoolManager(size_t buffer_mem_size, size_t buffer_disk_size,
+  std::unique_ptr<BufferPoolManager> CreateBufferPoolManager(size_t buffer_mem_size, size_t buffer_disk_size,
                                             std::shared_ptr<arrow::fs::FileSystem> root) {
     auto disk_file_replacer = std::make_unique<LRUReplacer<frame_id_t>>(buffer_disk_size);
-    static LocalDiskFileLoader file_loader{buffer_disk_size, std::move(disk_file_replacer), std::move(root),
-                                           std::make_unique<MockS3Loader>(root)};
+    auto file_loader = std::make_unique<LocalDiskFileLoader>(buffer_disk_size, std::move(disk_file_replacer), std::move(root),
+                                           std::make_unique<MockS3Loader>(root));
 
     auto buffer_pool_replacer = std::make_unique<LRUReplacer<frame_id_t>>(buffer_mem_size);
-    return {buffer_mem_size, &file_loader, std::move(buffer_pool_replacer)};
+    return std::make_unique<BufferPoolManager>(buffer_mem_size, std::move(file_loader), std::move(buffer_pool_replacer));
   }
 
   // this function is called after every test
@@ -76,10 +76,10 @@ TEST_F(IoServiceTest, RecoverTest) {
   const int buffer_disk_size = 9;
 
   auto bmp = CreateBufferPoolManager(buffer_mem_size, buffer_disk_size, root);
-  IOService io_service{root, &bmp};
-  EXPECT_EQ(arrow::Status::OK(), io_service.Recover());
+  auto io_service = std::make_unique<IOService>(root, std::move(bmp));
+  EXPECT_EQ(arrow::Status::OK(), io_service->Recover());
 
-  auto tableinfo = io_service.GetTableInfos();
+  auto tableinfo = io_service->GetTableInfos();
   EXPECT_EQ(table_info_ground_truth.size(), tableinfo.size());
 
   for (auto [tablename, filelist] : tableinfo) {
@@ -99,10 +99,10 @@ TEST_F(IoServiceTest, ReadFullTableTest) {
   const int buffer_disk_size = 9;
 
   auto bmp = CreateBufferPoolManager(buffer_mem_size, buffer_disk_size, root);
-  IOService io_service{root, &bmp};
-  EXPECT_EQ(arrow::Status::OK(), io_service.Recover());
+  auto io_service = std::make_unique<IOService>(root, std::move(bmp));
+  EXPECT_EQ(arrow::Status::OK(), io_service->Recover());
 
-  auto table_out = io_service.ReadTable("foo");
+  auto table_out = io_service->ReadTable("foo");
   EXPECT_TRUE(table_out != nullptr);
 
   std::vector<std::vector<int>> columns(2, std::vector<int>());
@@ -134,11 +134,11 @@ TEST_F(IoServiceTest, ReadTableWithSelectedColumnTest) {
   const int buffer_disk_size = 9;
 
   auto bmp = CreateBufferPoolManager(buffer_mem_size, buffer_disk_size, root);
-  IOService io_service{root, &bmp};
-  EXPECT_EQ(arrow::Status::OK(), io_service.Recover());
+  auto io_service = std::make_unique<IOService>(root, std::move(bmp));
+  EXPECT_EQ(arrow::Status::OK(), io_service->Recover());
 
   std::vector<std::string> column_names{"string_column"};
-  auto table_out = io_service.ReadTable("bar", column_names);
+  auto table_out = io_service->ReadTable("bar", column_names);
   EXPECT_TRUE(table_out != nullptr);
 
   //  FileUtil::PrintPretty(table_out);

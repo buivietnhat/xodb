@@ -13,7 +13,7 @@ namespace xodb {
 
 class BufferPoolManager : public FilePoolManager {
  public:
-  BufferPoolManager(size_t size, LocalDiskFileLoader *file_loader, std::unique_ptr<LRUReplacer<frame_id_t>> replacer);
+  BufferPoolManager(size_t size, std::unique_ptr<LocalDiskFileLoader> file_loader, std::unique_ptr<LRUReplacer<frame_id_t>> replacer);
 
   DISALLOW_COPY_AND_MOVE(BufferPoolManager);
 
@@ -30,7 +30,7 @@ class BufferPoolManager : public FilePoolManager {
 
   std::vector<ParquetFile> files_;
 
-  LocalDiskFileLoader *file_loader_{nullptr};
+  std::unique_ptr<LocalDiskFileLoader> file_loader_{nullptr};
 };
 
 }  // namespace xodb

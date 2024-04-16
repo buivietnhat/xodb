@@ -9,7 +9,7 @@ namespace xodb {
 
 class IOService {
  public:
-  explicit IOService(std::shared_ptr<arrow::fs::FileSystem> root, BufferPoolManager *buffer_pool_manager);
+  explicit IOService(std::shared_ptr<arrow::fs::FileSystem> root, std::unique_ptr<BufferPoolManager> buffer_pool_manager);
 
   std::shared_ptr<::arrow::Table> ReadTable(const std::string &table_name);
 
@@ -26,7 +26,7 @@ class IOService {
 
   std::shared_ptr<arrow::fs::FileSystem> root_;
 
-  BufferPoolManager *buffer_pool_manager_{nullptr};
+  std::unique_ptr<BufferPoolManager> buffer_pool_manager_{nullptr};
 
   // map table_name -> list of file corresponding to that table
   std::unordered_map<std::string, std::vector<std::string>> table_to_files_;
