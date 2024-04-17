@@ -1,6 +1,7 @@
 #pragma once
 
 #include <list>
+#include <mutex>
 #include <unordered_map>
 #include "common/concepts.h"
 #include "common/macros.h"
@@ -19,6 +20,7 @@ class LRUReplacer : public Replacer<Item> {
   LRUReplacer(size_t max_item) : max_num_items_(max_item) {}
 
   bool RecordAccess(const Item &item) override {
+    std::lock_guard l(mu_);
     // if the record is still in my history
     if (index_.contains(item)) {
       auto pos = index_[item];
@@ -29,7 +31,7 @@ class LRUReplacer : public Replacer<Item> {
       return true;
     }
 
-    if (Full()) {
+    if (FullUnlocked()) {
       return false;
     }
 
@@ -40,6 +42,8 @@ class LRUReplacer : public Replacer<Item> {
 
   bool Evict(Item *item) override {
     XODB_ASSERT(item != nullptr, "item must not be null");
+
+    std::lock_guard l(mu_);
 
     if (history_.empty()) {
       return false;
@@ -54,6 +58,8 @@ class LRUReplacer : public Replacer<Item> {
   }
 
   bool Remove(const Item &item) override {
+    std::lock_guard l(mu_);
+
     if (!index_.contains(item)) {
       return false;
     }
@@ -65,9 +71,15 @@ class LRUReplacer : public Replacer<Item> {
     return true;
   }
 
-  size_t Size() const { return history_.size(); }
+  size_t Size() const {
+    std::lock_guard l(mu_);
+    return history_.size();
+  }
 
-  bool Full() const { return history_.size() == max_num_items_; }
+  bool Full() const {
+    std::lock_guard l(mu_);
+    return FullUnlocked();
+  }
 
  private:
   void RecordNewest(const Item &item) {
@@ -75,10 +87,15 @@ class LRUReplacer : public Replacer<Item> {
     index_[item] = new_pos;
   }
 
+  bool FullUnlocked() const {
+    return history_.size() == max_num_items_;
+  }
+
   size_t max_num_items_;
   // represen this history of access, newly accessed item will be put to the front of the list
   std::list<Item> history_;
   std::unordered_map<Item, Pos> index_;
+  mutable std::mutex mu_;
 };
 
 }  // namespace xodb

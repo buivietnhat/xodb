@@ -16,12 +16,15 @@ IOService::IOService(std::shared_ptr<arrow::fs::FileSystem> root,
 }
 
 std::shared_ptr<::arrow::Table> IOService::ReadTable(const std::string &table_name) {
+  std::unique_lock table_to_files_latch(mu_);
   if (!table_to_files_.contains(table_name)) {
     // TODO(nhat): get files info from Catalog, load it from S3 server
     throw NotImplementedException("load from Catalog and S3");
   }
 
   const auto &file_list = table_to_files_[table_name];
+  table_to_files_latch.unlock();
+
   std::vector<std::shared_ptr<arrow::Table>> tables_read;
   tables_read.reserve(file_list.size());
 

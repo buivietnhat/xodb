@@ -11,18 +11,21 @@ BufferPoolManager::BufferPoolManager(size_t size, std::unique_ptr<LocalDiskFileL
 }
 
 void BufferPoolManager::LoadFileCachedCorrespondToFrame(frame_id_t frame_id, ParquetFile *file) {
+  std::lock_guard files_latch(mu_);
   XODB_ASSERT(frame_id < size_ && files_[frame_id].Valid(), "validate check");
   XODB_ASSERT(file != nullptr, "");
   *file = files_[frame_id];
 }
 
 std::optional<std::string> BufferPoolManager::GetFileNameOfFrame(frame_id_t frame_id) const {
+  std::lock_guard files_latch(mu_);
   XODB_ASSERT(frame_id < size_ && files_[frame_id].Valid(), "validate check");
 
   return files_[frame_id].GetFileName();
 }
 
 void BufferPoolManager::RemoveFrame(frame_id_t frame_id) {
+  std::lock_guard files_latch(mu_);
   XODB_ASSERT(frame_id < size_ && files_[frame_id].Valid(), "validate check");
   files_[frame_id].Invalidate();
 }
@@ -35,6 +38,7 @@ bool BufferPoolManager::SeekFile(const std::string &file_name, ParquetFile *file
 
 void BufferPoolManager::UpdateCache(frame_id_t frame_id, ParquetFile *file) {
   XODB_ASSERT(file != nullptr, "");
+  std::lock_guard files_latch(mu_);
   files_[frame_id] = *file;
 }
 

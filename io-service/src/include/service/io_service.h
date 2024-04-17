@@ -30,9 +30,7 @@ class IOService {
 
   // map table_name -> list of file corresponding to that table
   std::unordered_map<std::string, std::vector<std::string>> table_to_files_;
-
-  // map table_name -> its schema
-  //  std::unordered_map<std::string, std::shared_ptr<arrow::Schema>> schema_;
+  mutable std::mutex mu_; // protect table_to_files
 };
 
 }  // namespace xodb

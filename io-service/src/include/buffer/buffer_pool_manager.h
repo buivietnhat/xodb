@@ -2,6 +2,7 @@
 
 #include <list>
 #include <memory>
+#include <mutex>
 #include <unordered_map>
 #include "common/config.h"
 #include "object_pool/file_pool_manager.h"
@@ -13,7 +14,8 @@ namespace xodb {
 
 class BufferPoolManager : public FilePoolManager {
  public:
-  BufferPoolManager(size_t size, std::unique_ptr<LocalDiskFileLoader> file_loader, std::unique_ptr<LRUReplacer<frame_id_t>> replacer);
+  BufferPoolManager(size_t size, std::unique_ptr<LocalDiskFileLoader> file_loader,
+                    std::unique_ptr<LRUReplacer<frame_id_t>> replacer);
 
   DISALLOW_COPY_AND_MOVE(BufferPoolManager);
 
@@ -29,6 +31,7 @@ class BufferPoolManager : public FilePoolManager {
   void RemoveFrame(frame_id_t frame_id) override;
 
   std::vector<ParquetFile> files_;
+  mutable std::mutex mu_;  // protect files_;
 
   std::unique_ptr<LocalDiskFileLoader> file_loader_{nullptr};
 };

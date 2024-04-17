@@ -3,6 +3,7 @@
 #include <arrow/filesystem/filesystem.h>
 #include <parquet/arrow/reader.h>
 #include <parquet/arrow/writer.h>
+#include <mutex>
 #include "object_pool/file_pool_manager.h"
 #include "storage/parquet_file.h"
 #include "storage/s3_file_loader.h"
@@ -35,6 +36,10 @@ class LocalDiskFileLoader : public FilePoolManager {
   void RemoveFrame(frame_id_t frame_id) override;
 
   std::vector<std::string> file_names_;
+  mutable std::mutex file_names_mu_;  // protect file_names
+
+  std::vector<std::mutex> files_mu_; // protect each file
+
   std::shared_ptr<arrow::fs::FileSystem> root_;
   std::unique_ptr<S3FileLoader> s3_loader_;
 };

@@ -28,6 +28,7 @@ class FilePoolManager : public ObjectPoolManager {
   virtual void RemoveFrame(frame_id_t frame_id) = 0;
 
   std::unordered_map<std::string, frame_id_t> file_table_;
+  std::mutex mu_; //protect file_table_
 };
 
 }  // namespace xodb

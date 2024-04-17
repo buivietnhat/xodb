@@ -2,6 +2,7 @@
 
 #include <list>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include "common/config.h"
 #include "object_pool/lru_replacer.h"
@@ -32,12 +33,14 @@ class ObjectPoolManager {
       }
     };
 
+    std::unique_lock l(mu_);
     if (!available_frames_.empty()) {
       frame_id = available_frames_.front();
       available_frames_.pop_front();
       evicted = false;
       return frame_id;
     }
+    l.unlock();
 
     frame_id = 0;
     XODB_ENSURE(replacer_->Full(), "integrity check");
@@ -50,6 +53,7 @@ class ObjectPoolManager {
   size_t size_{0};
   std::unique_ptr<LRUReplacer<frame_id_t>> replacer_;
   std::list<frame_id_t> available_frames_;
+  std::mutex mu_;  // protect available_frames_
 };
 
 }  // namespace xodb
