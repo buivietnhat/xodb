@@ -11,7 +11,7 @@ class IOController : public arrow::flight::FlightServerBase {
  public:
   explicit IOController(std::unique_ptr<IOService> service) : service_(std::move(service)) {
     XODB_ASSERT(service_ != nullptr, "");
-    service_->Recover();
+    XODB_ASSERT(service_->Recover() == arrow::Status::OK(), "");
   }
 
   //  arrow::Status DoPut(const arrow::flight::ServerCallContext &,

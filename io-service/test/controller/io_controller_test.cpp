@@ -91,7 +91,6 @@ class IoControllerTest : public ::testing::Test {
       std::shared_ptr<arrow::Table> table;
       ARROW_ASSIGN_OR_RAISE(table, stream->ToTable());
 
-//      FileUtil::PrintPretty(table);
       *out = std::move(table);
 
       return arrow::Status::OK();
