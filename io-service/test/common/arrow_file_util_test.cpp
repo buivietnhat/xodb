@@ -44,6 +44,8 @@ TEST_F(ArrowFileUtilTest, ListDirTest) {
   EXPECT_EQ(arrow::Status::OK(), FileUtil::ListAllDirectory(std::move(root), dirs));
 
   std::vector<std::string> ground_truth{"foo", "bar", "zoo"};
+  std::sort(dirs.begin(), dirs.end());
+  std::sort(ground_truth.begin(), ground_truth.end());
   EXPECT_EQ(ground_truth, dirs);
 }
 
