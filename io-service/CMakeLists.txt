@@ -150,6 +150,7 @@ set(CMAKE_MODULE_PATH "${IOSERVICE_BUILD_SUPPORT_DIR}/cmake;${CMAKE_MODULE_PATH}
 find_package(LibElf)
 find_package(LibDwarf)
 find_package(Arrow REQUIRED)
+find_package(Poco REQUIRED Util)
 
 add_subdirectory(third_party)
 add_subdirectory(test)
@@ -167,6 +168,7 @@ set(THIRDPARTY_LIBS
         Arrow::arrow_shared
         arrow_flight parquet
         fmt
+        Poco::Util
 )
 
 add_library(ioservice STATIC ${IOSERVICE_SRCS}

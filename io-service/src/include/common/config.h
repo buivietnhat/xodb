@@ -1,7 +1,7 @@
 #pragma once
 
-#include <cstdio>
 #include <cstdint>
+#include <cstdio>
 
 namespace xodb {
 

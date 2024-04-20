@@ -7,7 +7,7 @@
 #include "common/config.h"
 #include "object_pool/file_pool_manager.h"
 #include "object_pool/lru_replacer.h"
-#include "storage/file_loader.h"
+#include "storage/local_disk_file_loader.h"
 #include "storage/parquet_file.h"
 
 namespace xodb {

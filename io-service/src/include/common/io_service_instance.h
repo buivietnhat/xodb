@@ -12,7 +12,7 @@ class IOServiceInstance {
  public:
   IOServiceInstance();
 
-  void Run();
+  int Run(int argc, char **argv);
 
  private:
   std::unique_ptr<IOService> MakeIOService(std::shared_ptr<arrow::fs::FileSystem> root,
@@ -35,7 +35,7 @@ class IOServiceInstance {
   const int buffer_disk_size_ = 10000;  // 10000 files on disk
   const std::string host_ = "localhost";
   const std::string data_dir_ = "./data/";
-  int port_ = 8080;
+  int port_ = 9000;
 
   std::shared_ptr<arrow::fs::FileSystem> fs_;
 };

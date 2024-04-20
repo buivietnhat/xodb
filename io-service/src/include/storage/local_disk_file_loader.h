@@ -38,7 +38,7 @@ class LocalDiskFileLoader : public FilePoolManager {
   std::vector<std::string> file_names_;
   mutable std::mutex file_names_mu_;  // protect file_names
 
-  std::vector<std::mutex> files_mu_; // protect each file
+  std::vector<std::mutex> files_mu_;  // protect each file
 
   std::shared_ptr<arrow::fs::FileSystem> root_;
   std::unique_ptr<S3FileLoader> s3_loader_;

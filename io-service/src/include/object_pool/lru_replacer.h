@@ -10,7 +10,7 @@
 namespace xodb {
 
 template <typename Item>
-  requires Hashable<Item>
+requires Hashable<Item>
 class LRUReplacer : public Replacer<Item> {
   using Pos = typename std::list<Item>::iterator;
 
@@ -87,9 +87,7 @@ class LRUReplacer : public Replacer<Item> {
     index_[item] = new_pos;
   }
 
-  bool FullUnlocked() const {
-    return history_.size() == max_num_items_;
-  }
+  bool FullUnlocked() const { return history_.size() == max_num_items_; }
 
   size_t max_num_items_;
   // represen this history of access, newly accessed item will be put to the front of the list

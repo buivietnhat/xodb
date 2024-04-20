@@ -4,7 +4,6 @@
 
 namespace xodb {
 
-
 class MockS3Loader : public S3FileLoader {
  public:
   MockS3Loader(std::shared_ptr<arrow::fs::FileSystem> root) : root_(std::move(root)) {}
@@ -36,4 +35,4 @@ class MockS3Loader : public S3FileLoader {
   int got_called{0};
 };
 
-}
+}  // namespace xodb

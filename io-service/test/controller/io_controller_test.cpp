@@ -188,7 +188,7 @@ TEST_F(IoControllerTest, ReadTableWithSelectedColumnsTest) {
   ASSERT_TRUE(client.ReadTable("bar", column_names, &table_out) == arrow::Status::OK());
   ASSERT_TRUE(table_out != nullptr);
 
-//
+  //
   EXPECT_EQ(1, table_out->num_columns());
   std::vector<std::string> ground_truth{"1", "2", "3", "4", "5", "6"};
 

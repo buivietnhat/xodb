@@ -31,7 +31,7 @@ RUN apt install -y -V  libparquet-glib-dev
 RUN apt-get install -y gdb ninja-build tar curl zip unzip
 RUN git clone https://github.com/microsoft/vcpkg && export VCPKG_FORCE_SYSTEM_BINARIES=true && ./vcpkg/bootstrap-vcpkg.sh
 
-RUN export VCPKG_FORCE_SYSTEM_BINARIES=true && ./vcpkg/vcpkg install lz4 re2 zstd
+RUN export VCPKG_FORCE_SYSTEM_BINARIES=true && ./vcpkg/vcpkg install lz4 re2 zstd poco
 
 
 

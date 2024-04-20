@@ -1,9 +1,6 @@
-#include <iostream>
 #include "common/io_service_instance.h"
 
-int main() {
+int main(int argc, char **argv) {
   xodb::IOServiceInstance instance;
-  instance.Run();
-
-  return 0;
+  return instance.Run(argc, argv);
 }

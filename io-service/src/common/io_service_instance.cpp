@@ -28,11 +28,12 @@ IOServiceInstance::IOServiceInstance() {
   app_ = MakeApp(std::move(controller));
 }
 
-void IOServiceInstance::Run() {
-  XODB_ASSERT(app_->Start(host_, port_) == arrow::Status::OK(), "");
-
-  while (true) {
-    std::this_thread::sleep_for(std::chrono::seconds(5));
+int IOServiceInstance::Run(int argc, char **argv) {
+  try {
+    return app_->run(argc, argv);
+  } catch (Poco::Exception &exc) {
+    std::cerr << exc.displayText() << std::endl;
+    return Poco::Util::Application::EXIT_SOFTWARE;
   }
 }
 
@@ -57,7 +58,7 @@ std::unique_ptr<IOController> IOServiceInstance::MakeController(std::unique_ptr<
 }
 
 std::unique_ptr<IOApplication> IOServiceInstance::MakeApp(std::unique_ptr<IOController> controller) {
-  return std::make_unique<IOApplication>(std::move(controller));
+  return std::make_unique<IOApplication>(std::move(controller), port_, host_);
 }
 
 }  // namespace xodb

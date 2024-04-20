@@ -48,13 +48,14 @@ class IoServiceTest : public ::testing::Test {
   }
 
   std::unique_ptr<BufferPoolManager> CreateBufferPoolManager(size_t buffer_mem_size, size_t buffer_disk_size,
-                                            std::shared_ptr<arrow::fs::FileSystem> root) {
+                                                             std::shared_ptr<arrow::fs::FileSystem> root) {
     auto disk_file_replacer = std::make_unique<LRUReplacer<frame_id_t>>(buffer_disk_size);
-    auto file_loader = std::make_unique<LocalDiskFileLoader>(buffer_disk_size, std::move(disk_file_replacer), std::move(root),
-                                           std::make_unique<MockS3Loader>(root));
+    auto file_loader = std::make_unique<LocalDiskFileLoader>(buffer_disk_size, std::move(disk_file_replacer),
+                                                             std::move(root), std::make_unique<MockS3Loader>(root));
 
     auto buffer_pool_replacer = std::make_unique<LRUReplacer<frame_id_t>>(buffer_mem_size);
-    return std::make_unique<BufferPoolManager>(buffer_mem_size, std::move(file_loader), std::move(buffer_pool_replacer));
+    return std::make_unique<BufferPoolManager>(buffer_mem_size, std::move(file_loader),
+                                               std::move(buffer_pool_replacer));
   }
 
   // this function is called after every test
