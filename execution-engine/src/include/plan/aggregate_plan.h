@@ -4,7 +4,7 @@
 
 namespace xodb::plan {
 
-class AggreagePlan : public Plan {
+class AggregagePlan : public Plan {
  public:
 };
 
