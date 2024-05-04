@@ -5,7 +5,7 @@
 #include <exception>
 #include <stdexcept>
 
-namespace executionengine {
+namespace xodb {
 
 #define EXECUTIONENGINE_ASSERT(expr, message) assert((expr) && (message))
 
@@ -81,4 +81,4 @@ ScopeGuard<Func> operator+(ScopeGuardOnExit, Func &&func) {
   return ScopeGuard<Func>(std::forward<Func>(func));
 }
 
-}  // namespace executionengine
+}  // namespace xodb

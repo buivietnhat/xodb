@@ -8,7 +8,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace executionengine {
+namespace xodb {
 
 enum class ExceptionType {
   /** Invalid exception type.*/
@@ -118,4 +118,4 @@ class ExecutionException : public Exception {
   explicit ExecutionException(const std::string &msg) : Exception(ExceptionType::EXECUTION, msg, true) {}
 };
 
-}  // namespace executionengine
+}  // namespace xodb
