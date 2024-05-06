@@ -4,8 +4,6 @@
 
 namespace xodb::execution {
 
-class AggregateExecutor : public Executor {
+class AggregateExecutor : public Executor {};
 
-};
-
-}
+}  // namespace xodb::execution

@@ -6,4 +6,4 @@ class ExecutionContext {
  public:
 };
 
-}
+}  // namespace xodb::execution

@@ -7,11 +7,11 @@
 
 namespace xodb {
 
-#define EXECUTIONENGINE_ASSERT(expr, message) assert((expr) && (message))
+#define XODB_ASSERT(expr, message) assert((expr) && (message))
 
 #define UNIMPLEMENTED(message) throw std::logic_error(message)
 
-#define EXECUTIONENGINE_ENSURE(expr, message)                  \
+#define EXECUTIONENGINE_ENSURE(expr, message)         \
   if (!(expr)) {                                      \
     std::cerr << "ERROR: " << (message) << std::endl; \
     std::terminate();                                 \

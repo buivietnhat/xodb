@@ -2,6 +2,6 @@
 
 namespace xodb::execution {
 
-void FilterExecutor::Execute() {}
+void FilterExecutor::Execute() const {}
 
-}
+}  // namespace xodb::execution

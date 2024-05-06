@@ -1,24 +1,52 @@
 #include "execution/pipeline.h"
+#include "common/concurrency/worker_pool.h"
+#include "common/config.h"
+#include "common/macros.h"
+#include "execution/executors/executor.h"
 #include "execution/executors/executor_factory.h"
 #include "plan/plan.h"
 
 namespace xodb::execution {
 
-Pipeline::Pipeline(std::vector<plan::Plan> plans) : plans_(std::move(plans)) {}
+Pipeline::Pipeline(PlanList plans, std::shared_ptr<ExecutionContext> context)
+    : original_plan_(std::move(plans)), context_(std::move(context)) {
+  XODB_ASSERT(!original_plan_.empty(), "construct pipeline with no plans");
+  XODB_ASSERT(context_ != nullptr, "");
+  XODB_ASSERT(original_plan_.front()->GetCardinality().has_value(), "the most outter leaf must have cardinality info");
+}
 
-void Pipeline::Execute(std::vector<size_t> &index_out) {
-  std::vector<size_t> column_indexes_out;
-  std::vector<size_t> column_indexes_in;
+auto Pipeline::CompileTaskList() -> std::vector<Task> {
+  std::vector<PlanList> subplans = GenerateSubplans();
+  std::vector<Task> tasks;
+  tasks.reserve(subplans.size());
 
-  // TODO(nhat): executors may throw exceptions, need to handle them here
-  //  for (auto &node : executors_) {
-  //    column_indexes_in.clear();
-  //    std::swap(column_indexes_in, column_indexes_out);
+  for (const auto &subplan : subplans) {
+    tasks.push_back(CreateSubtask(subplan));
+  }
+  return tasks;
+}
 
-  //    node.Execute(column_indexes_in, column_indexes_out);
-  //  }
+auto Pipeline::GenerateSubplans() -> std::vector<PlanList> { return std::vector<PlanList>(); }
 
-  index_out = column_indexes_out;
+auto Pipeline::CreateSubtask(const Pipeline::PlanList &subplan) const -> Task {
+  auto executors_pipeline = GenerateExecutors(subplan);
+  auto task = [] {
+//    for ([[maybe_unused]] const auto &executor : pipeline) {
+
+//    }
+  };
+  return task;
+}
+
+auto Pipeline::GenerateExecutors(const PlanList &subplan) const -> ExecutorList {
+  ExecutorList executors;
+  executors.reserve(original_plan_.size());
+
+  for (auto &plan : original_plan_) {
+    executors.push_back(ExecutorFactory::CreateExecutor(context_, plan));
+  }
+
+  return executors;
 }
 
 }  // namespace xodb::execution

@@ -164,7 +164,11 @@ set(THIRDPARTY_LIBS
 add_library(executionengine STATIC ${EXECUTIONENGINE_SRCS}
 )
 
-target_include_directories(executionengine PUBLIC ${EXECUTIONENGINE_SRC_INCLUDE_DIR} ${EXECUTIONENGINE_TEST_INCLUDE_DIR} ${EXECUTIONENGINE_THIRD_PARTY_INCLUDE_DIR})
+target_include_directories(executionengine PUBLIC
+        ${EXECUTIONENGINE_SRC_INCLUDE_DIR}
+        ${EXECUTIONENGINE_TEST_INCLUDE_DIR}
+        ${EXECUTIONENGINE_THIRD_PARTY_INCLUDE_DIR}
+)
 
 target_link_libraries(executionengine PUBLIC ${THIRDPARTY_LIBS})
 
