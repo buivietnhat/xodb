@@ -1,10 +1,10 @@
 #pragma once
 
-#include "plan/plan.h"
+#include "plan/abstract_plan.h"
 
 namespace xodb::plan {
 
-class HashJoinPlan : public Plan {
+class HashJoinPlan : public AbstractPlan {
  public:
 };
 

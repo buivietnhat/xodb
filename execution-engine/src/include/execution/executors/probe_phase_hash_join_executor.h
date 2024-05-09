@@ -1,9 +1,9 @@
 #pragma once
 
-#include "execution/executors/executor.h"
+#include "execution/executors/abstract_executor.h"
 
 namespace xodb::execution {
 
-class ProbePhaseHashJoinExecutor : public Executor {};
+class ProbePhaseHashJoinExecutor : public AbstractExecutor {};
 
 }  // namespace xodb::execution

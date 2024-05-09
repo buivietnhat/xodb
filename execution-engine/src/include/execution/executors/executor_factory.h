@@ -1,13 +1,13 @@
 #pragma once
 
 #include <memory>
+#include "execution/executors/abstract_executor.h"
 #include "execution/executors/aggregate_executor.h"
 #include "execution/executors/build_phase_hash_join_executor.h"
-#include "execution/executors/executor.h"
-#include "execution/executors/filter_executor.h"
 #include "execution/executors/probe_phase_hash_join_executor.h"
 #include "execution/executors/sequence_scan_executor.h"
-#include "plan/plan.h"
+#include "execution/executors/sequential_scan_executor.h"
+#include "plan/abstract_plan.h"
 
 namespace xodb::execution {
 
@@ -15,8 +15,8 @@ class ExecutorFactory {
  public:
   ExecutorFactory() = delete;
 
-  static std::unique_ptr<Executor> CreateExecutor(std::shared_ptr<ExecutionContext> context,
-                                                  std::shared_ptr<plan::Plan> plan) {
+  static std::unique_ptr<AbstractExecutor> CreateExecutor(std::shared_ptr<ExecutionContext> context,
+                                                  std::shared_ptr<plan::AbstractPlan> plan) {
     switch (plan->GetType()) {
       case plan::PlanType::SEQUENCE_SCAN:
         return nullptr;

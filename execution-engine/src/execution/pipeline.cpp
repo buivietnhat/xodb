@@ -2,9 +2,10 @@
 #include "common/concurrency/worker_pool.h"
 #include "common/config.h"
 #include "common/macros.h"
-#include "execution/executors/executor.h"
+#include "data_model/table_index.h"
+#include "execution/executors/abstract_executor.h"
 #include "execution/executors/executor_factory.h"
-#include "plan/plan.h"
+#include "plan/abstract_plan.h"
 
 namespace xodb::execution {
 
@@ -30,20 +31,25 @@ auto Pipeline::GenerateSubplans() -> std::vector<PlanList> { return std::vector<
 
 auto Pipeline::CreateSubtask(const Pipeline::PlanList &subplan) const -> Task {
   auto executors_pipeline = GenerateExecutors(subplan);
-  auto task = [] {
-//    for ([[maybe_unused]] const auto &executor : pipeline) {
+  auto task = [pipeline = std::move(executors_pipeline)] {
+    data_model::TableIndex in, out;
+    for (const auto &executor : *pipeline) {
+      std::swap(in, out);
+      executor->Execute(in, out);
+    }
 
-//    }
+    return out;
   };
+
   return task;
 }
 
 auto Pipeline::GenerateExecutors(const PlanList &subplan) const -> ExecutorList {
-  ExecutorList executors;
-  executors.reserve(original_plan_.size());
+  ExecutorList executors = std::make_shared<std::vector<std::unique_ptr<AbstractExecutor>>>();
+  executors->reserve(subplan.size());
 
-  for (auto &plan : original_plan_) {
-    executors.push_back(ExecutorFactory::CreateExecutor(context_, plan));
+  for (auto &plan : subplan) {
+    executors->push_back(ExecutorFactory::CreateExecutor(context_, plan));
   }
 
   return executors;

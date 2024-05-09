@@ -9,9 +9,7 @@ class Future {
   using Promise = std::promise<T>;
 
  public:
-  static Promise CreatePromise() {
-    return {};
-  }
+  static Promise CreatePromise() { return {}; }
 };
 
 }  // namespace xodb::common

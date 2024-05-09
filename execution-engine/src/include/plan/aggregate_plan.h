@@ -1,10 +1,10 @@
 #pragma once
 
-#include "plan/plan.h"
+#include "plan/abstract_plan.h"
 
 namespace xodb::plan {
 
-class AggregagePlan : public Plan {
+class AggregagePlan : public AbstractPlan {
  public:
 };
 

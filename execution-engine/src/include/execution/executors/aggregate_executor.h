@@ -1,9 +1,9 @@
 #pragma once
 
-#include "execution/executors/executor.h"
+#include "execution/executors/abstract_executor.h"
 
 namespace xodb::execution {
 
-class AggregateExecutor : public Executor {};
+class AggregateExecutor : public AbstractExecutor {};
 
 }  // namespace xodb::execution

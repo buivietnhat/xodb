@@ -6,12 +6,16 @@
 #include <vector>
 
 namespace xodb::plan {
-class Plan;
+class AbstractPlan;
+}
+
+namespace xodb::data_model {
+class TableIndex;
 }
 
 namespace xodb::execution {
 
-class Executor;
+class AbstractExecutor;
 class ExecutionContext;
 
 /**
@@ -20,9 +24,9 @@ class ExecutionContext;
  * Most leaf plan is at front of `plans`, data is pushed along the way
  */
 class Pipeline {
-  using ExecutorList = std::vector<std::unique_ptr<Executor>>;
-  using PlanList = std::list<std::shared_ptr<plan::Plan>>;
-  using Task = std::function<void(void)>;
+  using ExecutorList = std::shared_ptr<std::vector<std::unique_ptr<AbstractExecutor>>>;
+  using PlanList = std::list<std::shared_ptr<plan::AbstractPlan>>;
+  using Task = std::function<data_model::TableIndex(void)>;
 
  public:
   /**

@@ -4,19 +4,23 @@
 #include <optional>
 #include <vector>
 
+namespace xodb::data_model {
+class TableIndex;
+}
+
 namespace xodb::execution {
 
 class ExecutionContext;
 class PrimitiveRepository;
 
-class Executor {
+class AbstractExecutor {
  public:
-  Executor(std::shared_ptr<PrimitiveRepository> primitive_repository, std::shared_ptr<ExecutionContext> context)
+  AbstractExecutor(std::shared_ptr<PrimitiveRepository> primitive_repository, std::shared_ptr<ExecutionContext> context)
       : primitive_repository_(std::move(primitive_repository)), context_(std::move(context)) {}
 
-  virtual void Execute() const = 0;
+  virtual void Execute(const data_model::TableIndex &in, data_model::TableIndex &out) const = 0;
 
-  virtual ~Executor() = default;
+  virtual ~AbstractExecutor() = default;
 
  protected:
   std::shared_ptr<PrimitiveRepository> primitive_repository_;

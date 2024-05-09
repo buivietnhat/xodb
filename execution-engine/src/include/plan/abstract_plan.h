@@ -1,7 +1,7 @@
 #pragma once
 
 #include <optional>
-#include "data/schema.h"
+#include "data_model/schema.h"
 
 namespace xodb::plan {
 
@@ -19,25 +19,22 @@ struct Cardinality {
   size_t lenght;
 };
 
-class Plan {
+class AbstractPlan {
  public:
-  Plan(PlanType type, data::Schema output_schema) : type_(type), output_schema_(std::move(output_schema)) {}
+  AbstractPlan(PlanType type) : type_(type) {}
 
-  Plan(PlanType type, data::Schema output_schema, Cardinality cardinality) : Plan(type, std::move(output_schema)) {
-    cardinality_ = cardinality;
-  }
+  AbstractPlan(PlanType type, Cardinality cardinality) : AbstractPlan(type) { cardinality_ = cardinality; }
 
   PlanType GetType() const { return type_; }
 
   const std::optional<Cardinality> &GetCardinality() const { return cardinality_; }
 
-  virtual std::shared_ptr<Plan> CreateSubPlan(Cardinality cardinality) const = 0;
+  virtual std::shared_ptr<AbstractPlan> CreateSubPlan(Cardinality cardinality) const = 0;
 
-  virtual ~Plan() = default;
+  virtual ~AbstractPlan() = default;
 
- private:
+ protected:
   PlanType type_;
-  data::Schema output_schema_;
   std::optional<Cardinality> cardinality_;
 };
 
