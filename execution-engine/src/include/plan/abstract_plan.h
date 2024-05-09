@@ -21,7 +21,7 @@ struct Cardinality {
 
 class AbstractPlan {
  public:
-  AbstractPlan(PlanType type) : type_(type) {}
+  explicit AbstractPlan(PlanType type) : type_(type) {}
 
   AbstractPlan(PlanType type, Cardinality cardinality) : AbstractPlan(type) { cardinality_ = cardinality; }
 

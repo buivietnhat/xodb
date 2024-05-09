@@ -5,7 +5,6 @@
 #include "execution/executors/aggregate_executor.h"
 #include "execution/executors/build_phase_hash_join_executor.h"
 #include "execution/executors/probe_phase_hash_join_executor.h"
-#include "execution/executors/sequence_scan_executor.h"
 #include "execution/executors/sequential_scan_executor.h"
 #include "plan/abstract_plan.h"
 

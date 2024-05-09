@@ -10,8 +10,9 @@ class AbstractPlan;
 }
 
 namespace xodb::data_model {
-class TableIndex;
-}
+struct TableIndex;
+struct TableMetaList;
+}  // namespace xodb::data_model
 
 namespace xodb::execution {
 
@@ -33,7 +34,8 @@ class Pipeline {
    *
    * @param plans must be ordered that the first index of plans is the one must be executed first, and so on
    */
-  explicit Pipeline(PlanList plans, std::shared_ptr<ExecutionContext> context);
+  Pipeline(PlanList plans, std::shared_ptr<ExecutionContext> context,
+           std::shared_ptr<data_model::TableMetaList> table_meta_infos);
 
   std::vector<Task> CompileTaskList();
 
@@ -46,6 +48,7 @@ class Pipeline {
 
   PlanList original_plan_;
   std::shared_ptr<ExecutionContext> context_;
+  std::shared_ptr<data_model::TableMetaList> table_meta_infos_;
 };
 
 }  // namespace xodb::execution

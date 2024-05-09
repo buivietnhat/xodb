@@ -149,6 +149,8 @@ find_package(LibDwarf)
 add_subdirectory(third_party)
 add_subdirectory(test)
 
+find_package(Arrow REQUIRED)
+
 # #####################################################################################################################
 # Build library and executable
 # #####################################################################################################################
@@ -159,6 +161,7 @@ file(GLOB_RECURSE
 )
 
 set(THIRDPARTY_LIBS
+        Arrow::arrow_shared
 )
 
 add_library(executionengine STATIC ${EXECUTIONENGINE_SRCS}
