@@ -1,5 +1,6 @@
 #pragma once
 
+#include <arrow/api.h>
 #include <type_traits>
 #include "data_model/table.h"
 #include "plan/abstract_plan.h"
@@ -7,7 +8,8 @@
 namespace xodb::plan {
 
 struct PredicateFunction {
-   std::add_pointer<size_t(size_t, void *input_col, void *val, void *res)>::type func;
+  std::add_pointer<size_t(const std::shared_ptr<arrow::ChunkedArray> &col, const std::vector<int> &input_index,
+                          void *val, std::vector<int> &index_out)>::type func;
 };
 
 class SequentialScanPlan : public AbstractPlan {
@@ -16,6 +18,7 @@ class SequentialScanPlan : public AbstractPlan {
   struct PredicateInfo {
     std::string column_name;
     PredicateFunction function;
+    void *val;
   };
 
  public:

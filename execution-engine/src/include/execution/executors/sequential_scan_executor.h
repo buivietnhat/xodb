@@ -25,8 +25,9 @@ class SequentialScanExecutor : public AbstractExecutor {
   void Execute(const data_model::TableIndex &in, data_model::TableIndex &out) const override;
 
  private:
-  static bool ApplyPredicate(const data_model::TableIndex &in, data_model::TableIndex &out,
-                      const std::shared_ptr<arrow::ChunkedArray> &column, plan::PredicateFunction pred);
+  static size_t ApplyPredicate(const data_model::TableIndex &in, data_model::TableIndex &out,
+                             const std::shared_ptr<arrow::ChunkedArray> &column, void *val,
+                             plan::PredicateFunction pred);
 
   std::shared_ptr<plan::SequentialScanPlan> plan_;
 };

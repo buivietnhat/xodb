@@ -1,6 +1,7 @@
 #pragma once
 
 #include <arrow/api.h>
+#include <algorithm>
 #include "data_model/schema.h"
 
 namespace xodb::data_model {
@@ -10,10 +11,13 @@ struct ColumnIndex {
 };
 
 struct TableIndex {
-  std::vector<size_t> indexes;
-  void Clear() {
-    indexes.clear();
-  }
+  std::vector<int> indexes;
+
+  TableIndex(size_t size) { indexes.resize(size, 0); }
+
+  TableIndex() = default;
+
+  void Clear() { std::fill(indexes.begin(), indexes.end(), 0); }
 };
 
 struct TableMetaData {

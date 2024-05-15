@@ -151,6 +151,7 @@ add_subdirectory(test)
 
 find_package(Arrow REQUIRED)
 
+find_package(lz4 CONFIG REQUIRED)
 # #####################################################################################################################
 # Build library and executable
 # #####################################################################################################################
@@ -161,6 +162,7 @@ file(GLOB_RECURSE
 )
 
 set(THIRDPARTY_LIBS
+        lz4
         Arrow::arrow_shared
 )
 

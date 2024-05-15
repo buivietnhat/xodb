@@ -1,121 +1,141 @@
 #pragma once
 
-#include <atomic>
 #include <cstdio>
-#include <cstdlib>
+#include <exception>
 #include <iostream>
 #include <memory>
-#include <stdexcept>
 #include <string>
 
 namespace xodb {
 
-enum class ExceptionType {
-  /** Invalid exception type.*/
-  INVALID = 0,
-  /** Value out of range. */
-  OUT_OF_RANGE = 1,
-  /** Conversion/casting error. */
-  CONVERSION = 2,
-  /** Unknown type in the type subsystem. */
-  UNKNOWN_TYPE = 3,
-  /** Decimal-related errors. */
-  DECIMAL = 4,
-  /** Type mismatch. */
-  MISMATCH_TYPE = 5,
-  /** Division by 0. */
-  DIVIDE_BY_ZERO = 6,
-  /** Incompatible type. */
-  INCOMPATIBLE_TYPE = 8,
-  /** Out of memory error */
-  OUT_OF_MEMORY = 9,
-  /** Method not implemented. */
-  NOT_IMPLEMENTED = 11,
-  /** Execution exception. */
-  EXECUTION = 12,
+/**
+ * Use the macros below for generating exceptions.
+ * They record where the exception was generated.
+ */
+
+#define NOT_IMPLEMENTED_EXCEPTION(msg) NotImplementedException(msg, __FILE__, __LINE__)
+#define CATALOG_EXCEPTION(msg) CatalogException(msg, __FILE__, __LINE__)
+#define ABORT_EXCEPTION(msg) AbortException(msg, __FILE__, __LINE__)
+#define EXECUTION_EXCEPTION(msg) ExecutionException(msg, __FILE__, __LINE__)
+
+/**
+ * Exception types
+ */
+enum class ExceptionType : uint8_t {
+  RESERVED,
+  NOT_IMPLEMENTED,
+  BINDER,
+  CATALOG,
+  MESSENGER,
+  SETTINGS,
+  EXECUTION
 };
 
-extern std::atomic<bool> global_disable_execution_exception_print;
-
+/**
+ * Exception base class.
+ */
 class Exception : public std::runtime_error {
  public:
   /**
-   * Construct a new Exception instance.
-   * @param message The exception message
+   * Creates a new Exception with the given parameters.
+   * @param type exception type
+   * @param msg exception message to be displayed
+   * @param file name of the file in which the exception occurred
+   * @param line line number at which the exception occurred
    */
-  explicit Exception(const std::string &message, bool print = true)
-      : std::runtime_error(message), type_(ExceptionType::INVALID) {
-#ifndef NDEBUG
-    if (print) {
-      std::string exception_message = "Message :: " + message + "\n";
-      std::cerr << exception_message;
-    }
-#endif
+  Exception(const ExceptionType type, const char *msg, const char *file, int line)
+      : std::runtime_error(msg), type_(type), file_(file), line_(line) {}
+
+  /**
+   * Allows type and source location of the exception to be recorded in the log
+   * at the catch point.
+   */
+  friend std::ostream &operator<<(std::ostream &out, const Exception &ex) {
+    out << ex.GetType() << " exception:";
+    out << ex.GetFile() << ":";
+    out << ex.GetLine() << ":";
+    out << ex.what();
+    return out;
   }
 
   /**
-   * Construct a new Exception instance with specified type.
-   * @param exception_type The exception type
-   * @param message The exception message
+   * @return the exception type
    */
-  Exception(ExceptionType exception_type, const std::string &message, bool print = true)
-      : std::runtime_error(message), type_(exception_type) {
-#ifndef NDEBUG
-    if (print && !global_disable_execution_exception_print.load()) {
-      std::string exception_message =
-          "\nException Type :: " + ExceptionTypeToString(type_) + ", Message :: " + message + "\n\n";
-      std::cerr << exception_message;
-    }
-#endif
-  }
-
-  /** @return The type of the exception */
-  auto GetType() const -> ExceptionType { return type_; }
-
-  /** @return A human-readable string for the specified exception type */
-  static auto ExceptionTypeToString(ExceptionType type) -> std::string {
-    switch (type) {
-      case ExceptionType::INVALID:
-        return "Invalid";
-      case ExceptionType::OUT_OF_RANGE:
-        return "Out of Range";
-      case ExceptionType::CONVERSION:
-        return "Conversion";
-      case ExceptionType::UNKNOWN_TYPE:
-        return "Unknown Type";
-      case ExceptionType::DECIMAL:
-        return "Decimal";
-      case ExceptionType::MISMATCH_TYPE:
-        return "Mismatch Type";
-      case ExceptionType::DIVIDE_BY_ZERO:
-        return "Divide by Zero";
-      case ExceptionType::INCOMPATIBLE_TYPE:
-        return "Incompatible type";
-      case ExceptionType::OUT_OF_MEMORY:
-        return "Out of Memory";
+  const char *GetType() const {
+    switch (type_) {
       case ExceptionType::NOT_IMPLEMENTED:
-        return "Not implemented";
+        return "Not Implemented";
+      case ExceptionType::CATALOG:
+        return "Catalog";
+      case ExceptionType::MESSENGER:
+        return "Messenger";
+      case ExceptionType::SETTINGS:
+        return "Settings";
+      case ExceptionType::BINDER:
+        return "Binder";
       case ExceptionType::EXECUTION:
         return "Execution";
       default:
-        return "Unknown";
+        return "Unknown exception type";
     }
   }
 
- private:
-  ExceptionType type_;
+  /**
+   * @return the file that threw the exception
+   */
+  const char *GetFile() const { return file_; }
+
+  /**
+   * @return the line number that threw the exception
+   */
+  int GetLine() const { return line_; }
+
+ protected:
+  /**
+   * The type of exception.
+   */
+  const ExceptionType type_;
+  /**
+   * The name of the file in which the exception was raised.
+   */
+  const char *file_;
+  /**
+   * The line number at which the exception was raised.
+   */
+  const int line_;
 };
 
-class NotImplementedException : public Exception {
- public:
-  NotImplementedException() = delete;
-  explicit NotImplementedException(const std::string &msg) : Exception(ExceptionType::NOT_IMPLEMENTED, msg) {}
-};
+// -----------------------
+// Derived exception types
+// -----------------------
 
-class ExecutionException : public Exception {
- public:
-  ExecutionException() = delete;
-  explicit ExecutionException(const std::string &msg) : Exception(ExceptionType::EXECUTION, msg, true) {}
-};
+#define DEFINE_EXCEPTION(e_name, e_type)                                                                       \
+  class e_name : public Exception {                                                                            \
+    e_name() = delete;                                                                                         \
+                                                                                                               \
+   public:                                                                                                     \
+    e_name(const char *msg, const char *file, int line) : Exception(e_type, msg, file, line) {}                \
+    e_name(const std::string &msg, const char *file, int line) : Exception(e_type, msg.c_str(), file, line) {} \
+  }
 
-}  // namespace xodb
+#define DEFINE_EXCEPTION_WITH_ERRCODE(e_name, e_type)                                  \
+  class e_name : public Exception {                                                    \
+    e_name() = delete;                                                                 \
+                                                                                       \
+   public:                                                                             \
+    e_name(const char *msg, const char *file, int line, common::ErrorCode code)        \
+        : Exception(e_type, msg, file, line), code_(code) {}                           \
+    e_name(const std::string &msg, const char *file, int line, common::ErrorCode code) \
+        : Exception(e_type, msg.c_str(), file, line), code_(code) {}                   \
+                                                                                       \
+    /** The SQL error code. */                                                         \
+    common::ErrorCode code_;                                                           \
+  }
+
+DEFINE_EXCEPTION(NotImplementedException, ExceptionType::NOT_IMPLEMENTED);
+DEFINE_EXCEPTION(CatalogException, ExceptionType::CATALOG);
+DEFINE_EXCEPTION(ExecutionException, ExceptionType::EXECUTION);
+
+
+
+}  // namespace noisepage
