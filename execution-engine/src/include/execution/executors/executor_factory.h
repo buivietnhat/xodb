@@ -15,7 +15,7 @@ class ExecutorFactory {
   ExecutorFactory() = delete;
 
   static std::unique_ptr<AbstractExecutor> CreateExecutor(std::shared_ptr<ExecutionContext> context,
-                                                  std::shared_ptr<plan::AbstractPlan> plan) {
+                                                          std::shared_ptr<plan::AbstractPlan> plan) {
     switch (plan->GetType()) {
       case plan::PlanType::SEQUENCE_SCAN:
         return nullptr;

@@ -24,6 +24,7 @@ struct TableMetaData {
   std::string table_name;
   Schema schema;
   std::string s3_location;
+  std::optional<std::string> local_storage_node;
 };
 
 struct TableMetaList {

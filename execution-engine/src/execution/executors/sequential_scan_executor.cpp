@@ -9,11 +9,10 @@
 
 namespace xodb::execution {
 
-SequentialScanExecutor::SequentialScanExecutor(const std::shared_ptr<PrimitiveRepository> &primitive_repository,
-                                               const std::shared_ptr<ExecutionContext> &context,
+SequentialScanExecutor::SequentialScanExecutor(const std::shared_ptr<ExecutionContext> &context,
                                                std::shared_ptr<data_model::TableMetaList> table_meta_infos,
                                                std::shared_ptr<plan::SequentialScanPlan> plan)
-    : AbstractExecutor(primitive_repository, context, std::move(table_meta_infos)), plan_(std::move(plan)) {}
+    : AbstractExecutor(context, std::move(table_meta_infos)), plan_(std::move(plan)) {}
 
 void SequentialScanExecutor::Execute(const data_model::TableIndex &in, data_model::TableIndex &out) const {
   const auto &table_name = plan_->table_name_;
@@ -22,7 +21,8 @@ void SequentialScanExecutor::Execute(const data_model::TableIndex &in, data_mode
   auto *io_service_proxy = context_->GetIOServiceProxy();
   XODB_ASSERT(io_service_proxy != nullptr, "");
 
-  std::shared_ptr<arrow::Table> table_data = io_service_proxy->ReadTable(table_name, plan_->output_col_indexes_);
+  std::shared_ptr<arrow::Table> table_data =
+      io_service_proxy->ReadTable(table_name, plan_->output_col_indexes_, table_meta_infos_->map.at(table_name));
   if (table_data == nullptr) {
     throw EXECUTION_EXCEPTION(fmt::format("sequential scan: cannot read table {}", table_name.c_str()));
   }
@@ -44,7 +44,7 @@ void SequentialScanExecutor::Execute(const data_model::TableIndex &in, data_mode
       return;
     }
 
-    if (pred_index < predicate_infos.size()) {
+    if (pred_index < predicate_infos.size() - 1) {
       std::swap(in_copy, out);
       out.Clear();
     }

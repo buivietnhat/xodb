@@ -12,14 +12,14 @@ struct PredicateFunction {
                           void *val, std::vector<int> &index_out)>::type func;
 };
 
+struct PredicateInfo {
+  std::string column_name;
+  PredicateFunction function;
+  void *val;
+};
+
 class SequentialScanPlan : public AbstractPlan {
   friend class execution::SequentialScanExecutor;
-
-  struct PredicateInfo {
-    std::string column_name;
-    PredicateFunction function;
-    void *val;
-  };
 
  public:
   SequentialScanPlan(const std::vector<PredicateInfo> &predicate_infos, std::string table_name,

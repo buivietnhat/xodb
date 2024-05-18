@@ -21,15 +21,7 @@ namespace xodb {
 /**
  * Exception types
  */
-enum class ExceptionType : uint8_t {
-  RESERVED,
-  NOT_IMPLEMENTED,
-  BINDER,
-  CATALOG,
-  MESSENGER,
-  SETTINGS,
-  EXECUTION
-};
+enum class ExceptionType : uint8_t { RESERVED, NOT_IMPLEMENTED, BINDER, CATALOG, MESSENGER, SETTINGS, EXECUTION };
 
 /**
  * Exception base class.
@@ -136,6 +128,4 @@ DEFINE_EXCEPTION(NotImplementedException, ExceptionType::NOT_IMPLEMENTED);
 DEFINE_EXCEPTION(CatalogException, ExceptionType::CATALOG);
 DEFINE_EXCEPTION(ExecutionException, ExceptionType::EXECUTION);
 
-
-
-}  // namespace noisepage
+}  // namespace xodb
