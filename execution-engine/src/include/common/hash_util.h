@@ -1,16 +1,16 @@
 #pragma once
 
-#include "common/defs.h"
-#include "common/macros.h"
-#include "xxHash/xxh3.h"
 #include <cstdint>
 #include <cstring>
 #include <string>
 #include <type_traits>
+#include "common/defs.h"
+#include "common/macros.h"
+#include "xxHash/xxh3.h"
 
 namespace xodb::common {
 class HashUtil {
-public:
+ public:
   /** This class cannot be copied or moved. */
   DISALLOW_COPY_AND_MOVE(HashUtil);
 
@@ -26,8 +26,7 @@ public:
   static hash_t HashBytes(const byte *bytes, const uint64_t length) {
     hash_t hash = length;
     for (uint64_t i = 0; i < length; ++i) {
-      hash = ((hash << 5) ^ (hash >> 27)) ^
-             static_cast<uint8_t>(bytes[i]); // NOLINT
+      hash = ((hash << 5) ^ (hash >> 27)) ^ static_cast<uint8_t>(bytes[i]);  // NOLINT
     }
     return hash;
   }
@@ -40,10 +39,8 @@ public:
    */
   template <typename T>
   static auto Hash(const T &obj)
-      -> std::enable_if_t<!std::is_arithmetic_v<T> &&
-                              !std::is_same<T, std::string>::value &&
-                              !std::is_same<T, char>::value,
-                          hash_t> {
+      -> std::enable_if_t<
+          !std::is_arithmetic_v<T> && !std::is_same<T, std::string>::value && !std::is_same<T, char>::value, hash_t> {
     return XXH3_64bits(reinterpret_cast<const byte *>(&obj), sizeof(T));
   }
 
@@ -56,11 +53,9 @@ public:
    * @return combined hash
    */
   template <class IteratorType>
-  static hash_t CombineHashInRange(const hash_t base, IteratorType first,
-                                   IteratorType last) {
+  static hash_t CombineHashInRange(const hash_t base, IteratorType first, IteratorType last) {
     hash_t result = base;
-    for (; first != last; ++first)
-      result = CombineHashes(result, Hash(*first));
+    for (; first != last; ++first) result = CombineHashes(result, Hash(*first));
     return result;
   }
 
@@ -82,9 +77,7 @@ public:
    * @param len The length of the input buffer to hash.
    * @return The computed hash value based on the contents of the input buffer.
    */
-  static auto Hash(const uint8_t *buf, std::size_t len) -> hash_t {
-    return HashXX3(buf, len);
-  }
+  static auto Hash(const uint8_t *buf, std::size_t len) -> hash_t { return HashXX3(buf, len); }
 
   /**
    * Compute the hash value of the input buffer with the provided length and
@@ -94,9 +87,7 @@ public:
    * @param seed The seed hash value to mix in.
    * @return The computed hash value based on the contents of the input buffer.
    */
-  static auto Hash(const uint8_t *buf, std::size_t len, hash_t seed) -> hash_t {
-    return HashXX3(buf, len, seed);
-  }
+  static auto Hash(const uint8_t *buf, std::size_t len, hash_t seed) -> hash_t { return HashXX3(buf, len, seed); }
 
   /**
    * Special case Hash method for strings. If you use the above version (const T
@@ -131,8 +122,7 @@ public:
    * @param second_hash The second hash value
    * @return The mixed hash value
    */
-  static hash_t CombineHashes(const hash_t first_hash,
-                              const hash_t second_hash) {
+  static hash_t CombineHashes(const hash_t first_hash, const hash_t second_hash) {
     // Based on Hash128to64() from cityhash.xxh3
     static constexpr auto k_mul = uint64_t(0x9ddfea08eb382d69);
     hash_t a = (first_hash ^ second_hash) * k_mul;
@@ -150,16 +140,13 @@ public:
    * @param hash The input hash value to scramble.
    * @return The scrambled hash value.
    */
-  static hash_t ScrambleHash(const hash_t hash) {
-    return XXH64_avalanche(hash);
-  }
+  static hash_t ScrambleHash(const hash_t hash) { return XXH64_avalanche(hash); }
 
   /**
    * Integer Murmur3 hashing.
    */
   template <typename T>
-  static auto HashMurmur(T val, hash_t seed)
-      -> std::enable_if_t<std::is_arithmetic_v<T>, hash_t> {
+  static auto HashMurmur(T val, hash_t seed) -> std::enable_if_t<std::is_arithmetic_v<T>, hash_t> {
     auto k = static_cast<uint64_t>(val);
     k ^= seed;
     k ^= k >> 33;
@@ -174,31 +161,25 @@ public:
    * Integer Murmur3 hashing with a seed of 0.
    */
   template <typename T>
-  static auto
-  HashMurmur(T val) -> std::enable_if_t<std::is_fundamental_v<T>, hash_t> {
+  static auto HashMurmur(T val) -> std::enable_if_t<std::is_fundamental_v<T>, hash_t> {
     return HashMurmur(val, 0);
   }
 
   /**
    * String XXH3 hashing.
    */
-  static hash_t HashXX3(const uint8_t *buf, uint32_t len, hash_t seed) {
-    return XXH3_64bits_withSeed(buf, len, seed);
-  }
+  static hash_t HashXX3(const uint8_t *buf, uint32_t len, hash_t seed) { return XXH3_64bits_withSeed(buf, len, seed); }
 
   /**
    * String XXH3 hashing (no seed).
    */
-  static hash_t HashXX3(const uint8_t *buf, uint32_t len) {
-    return XXH3_64bits(buf, len);
-  }
+  static hash_t HashXX3(const uint8_t *buf, uint32_t len) { return XXH3_64bits(buf, len); }
 
   /**
    * Arbitrary object XXH3 hashing.
    */
   template <typename T>
-  static auto HashXX3(T val, hash_t seed)
-      -> std::enable_if_t<std::is_arithmetic_v<T>, hash_t> {
+  static auto HashXX3(T val, hash_t seed) -> std::enable_if_t<std::is_arithmetic_v<T>, hash_t> {
     return XXH3_64bits_withSeed(&val, sizeof(T), seed);
   }
 
@@ -206,9 +187,8 @@ public:
    * Arbitrary object XXH3 hashing (no seed).
    */
   template <typename T>
-  static auto
-  HashXX3(const T val) -> std::enable_if_t<std::is_arithmetic_v<T>, hash_t> {
+  static auto HashXX3(const T val) -> std::enable_if_t<std::is_arithmetic_v<T>, hash_t> {
     return XXH3_64bits(&val, sizeof(T));
   }
 };
-} // namespace xodb::common
+}  // namespace xodb::common
